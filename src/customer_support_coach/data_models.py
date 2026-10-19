@@ -1,3 +1,4 @@
+
 """
 Shared Data Models and Validation
 Developed by Vikas M
@@ -6,6 +7,7 @@ Project: AI Customer Support Coaching Assistant
 """
 
 import json
+import math
 import re
 import uuid
 from dataclasses import dataclass, field
@@ -37,6 +39,7 @@ class Speaker(str, Enum):
 
 
 def validate_id(value: str, field_name: str) -> str:
+    """Validate an identifier containing 1-128 permitted characters."""
     if not isinstance(value, str) or not re.fullmatch(
         r"[A-Za-z0-9_.:-]{1,128}", value
     ):
@@ -47,6 +50,7 @@ def validate_id(value: str, field_name: str) -> str:
 
 
 def validate_text(value: str, field_name: str) -> str:
+    """Require non-empty text and remove surrounding whitespace."""
     if not isinstance(value, str) or not value.strip():
         raise ValidationError(
             f"{field_name} must be a non-empty string."
@@ -55,6 +59,7 @@ def validate_text(value: str, field_name: str) -> str:
 
 
 def validate_timestamp(value: datetime, field_name: str) -> datetime:
+    """Require a timezone-aware datetime and normalize it to UTC."""
     if not isinstance(value, datetime):
         raise ValidationError(f"{field_name} must be a datetime.")
 
@@ -67,17 +72,29 @@ def validate_timestamp(value: datetime, field_name: str) -> datetime:
 
 
 def validate_json_object(value: dict, field_name: str) -> dict:
+    """Require a dictionary containing strict JSON-compatible data."""
     if not isinstance(value, dict):
         raise ValidationError(f"{field_name} must be a dictionary.")
 
     try:
-        json.dumps(value)
-    except (TypeError, ValueError):
+        json.dumps(value, allow_nan=False)
+    except (TypeError, ValueError, OverflowError):
         raise ValidationError(
-            f"{field_name} must contain JSON-serializable data."
+            f"{field_name} must contain valid JSON-serializable data."
         ) from None
 
     return value
+
+
+def _normalize_enum(enum_type: type[Enum], value: Any, field_name: str):
+    """Convert a valid enum value or raise a consistent validation error."""
+    try:
+        return enum_type(value)
+    except (ValueError, TypeError):
+        allowed = ", ".join(item.value for item in enum_type)
+        raise ValidationError(
+            f"{field_name} must be one of: {allowed}."
+        ) from None
 
 
 @dataclass
@@ -106,13 +123,12 @@ class Session:
             self.session_id, "session_id"
         )
 
-        try:
-            self.mode = InteractionMode(self.mode)
-            self.status = SessionStatus(self.status)
-        except ValueError:
-            raise ValidationError(
-                "Invalid interaction mode or session status."
-            ) from None
+        self.mode = _normalize_enum(
+            InteractionMode, self.mode, "mode"
+        )
+        self.status = _normalize_enum(
+            SessionStatus, self.status, "status"
+        )
 
         self.product_context = validate_json_object(
             self.product_context, "product_context"
@@ -211,12 +227,9 @@ class ConversationMessage:
             self.content, "content"
         )
 
-        try:
-            self.speaker = Speaker(self.speaker)
-        except ValueError:
-            raise ValidationError(
-                "speaker must be customer, agent, or system."
-            ) from None
+        self.speaker = _normalize_enum(
+            Speaker, self.speaker, "speaker"
+        )
 
         if (
             isinstance(self.turn_number, bool)
@@ -235,6 +248,7 @@ class ConversationMessage:
         )
 
     def to_dict(self) -> dict[str, Any]:
+        """Convert the message into JSON-compatible data."""
         return {
             "message_id": self.message_id,
             "session_id": self.session_id,
@@ -286,6 +300,7 @@ class AgentResult:
         )
 
     def to_dict(self) -> dict[str, Any]:
+        """Convert the agent result into JSON-compatible data."""
         return {
             "result_id": self.result_id,
             "session_id": self.session_id,
