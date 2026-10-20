@@ -1,0 +1,14 @@
+# Dependencies for the RAG module (src/customer_support_coach/rag).
+# Tested with Python 3.12, chromadb 1.5.9, pypdf 5.9.0. Python 3.10+ is required
+# (the shared data models already use "X | None" annotations).
+#
+#   py -m pip install -r requirements-rag.txt        (Windows)
+#
+# The default embedding model (ONNX all-MiniLM-L6-v2) ships inside chromadb's
+# dependencies (onnxruntime, tokenizers); only its ~80 MB weights are
+# downloaded, once, on first use.
+chromadb>=1.5,<2
+pypdf>=5.0,<6
+
+# Optional alternative embedding provider (pulls in PyTorch, ~2 GB):
+# sentence-transformers>=3.0
