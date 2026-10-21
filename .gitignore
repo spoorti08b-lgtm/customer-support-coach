@@ -1,0 +1,6 @@
+__pycache__/
+.venv/
+data/sessions/
+data/kb_index.json
+.env
+*.py[cod]
