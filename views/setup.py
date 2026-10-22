@@ -1,4 +1,3 @@
-"""Setup page: KB ingestion, mode selection, scenario, validation."""
 import streamlit as st
 
 from utils import rag_stub, storage
@@ -14,7 +13,6 @@ MODE_INFO = {
 
 
 def kb_section():
-    """Knowledge base upload and indexing card."""
     st.markdown(
         '<p class="section-heading">Support Knowledge Base</p>'
         '<p class="section-desc">'
