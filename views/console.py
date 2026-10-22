@@ -1,4 +1,3 @@
-"""Three-panel live coaching console: conversation | coaching | knowledge."""
 import streamlit as st
 
 from utils import pipeline_stub as pipe
@@ -7,7 +6,6 @@ from utils.validation import validate_message
 
 # Escalation risk threshold for prominent warning banner
 RISK_ALERT = 70
-
 
 def add_message(role, text):
     """Append a message, run analysis if it is a customer message, then save."""
@@ -24,10 +22,7 @@ def n_customer():
     """Count how many customer messages are in the conversation so far."""
     return sum(m["role"] == "customer" for m in st.session_state.messages)
 
-
-# ---------------------------------------------------------------------------
 # Conversation panel — left column
-# ---------------------------------------------------------------------------
 def conversation_panel():
     s, cfg = st.session_state, st.session_state.config
     st.markdown('<p class="section-heading">Conversation</p>', unsafe_allow_html=True)
@@ -84,7 +79,6 @@ def conversation_panel():
 
 
 def simulate_next():
-    """Add the next simulated customer message after the agent has replied."""
     cfg = st.session_state.config
     k = n_customer()
     if k < cfg["max_turns"]:
@@ -94,9 +88,7 @@ def simulate_next():
             "Simulation complete — end the session to see the report."
         )
 
-
 def reply_form(label, after=None):
-    """Shared form for the agent to type and submit a reply."""
     with st.form(f"reply_{len(st.session_state.messages)}", clear_on_submit=True):
         txt = st.text_area(label, height=80)
         if st.form_submit_button("Send reply", use_container_width=True):
@@ -109,10 +101,7 @@ def reply_form(label, after=None):
                     after()
                 st.rerun()
 
-
-# ---------------------------------------------------------------------------
 # Coaching panel — middle column
-# ---------------------------------------------------------------------------
 def coaching_panel(a):
     st.markdown('<p class="section-heading">Coaching Feed</p>', unsafe_allow_html=True)
     if not a:
@@ -146,10 +135,7 @@ def coaching_panel(a):
             for note in t["notes"]:
                 st.write(note)
 
-
-# ---------------------------------------------------------------------------
 # Knowledge panel — right column
-# ---------------------------------------------------------------------------
 def knowledge_panel(a):
     st.markdown('<p class="section-heading">Knowledge</p>', unsafe_allow_html=True)
     if not a:
@@ -174,14 +160,10 @@ def knowledge_panel(a):
                 preview += "..."
             st.caption(preview)
 
-
-# ---------------------------------------------------------------------------
 # Main render
-# ---------------------------------------------------------------------------
 def render():
     s, cfg = st.session_state, st.session_state.config
-
-    # Header row
+    
     col_title, col_back, col_end = st.columns([5, 2, 2])
     col_title.markdown(
         "<h1>Live Coaching Console</h1>",
