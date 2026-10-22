@@ -1,99 +1,471 @@
-"""AI Customer Support Coaching Assistant — Streamlit frontend. Run: streamlit run app.py"""
 import streamlit as st
 
 from utils import storage
 from views import console, report, setup
 
-st.set_page_config(page_title="Support Coaching Assistant", page_icon="🎧",
-                   layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(
+    page_title="Support Coaching Assistant",
+    page_icon="🎧",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
 st.markdown("""
 <style>
-.block-container{padding-top:1.5rem;max-width:1500px}
-@media (max-width:768px){
-  .block-container{padding:3.2rem .7rem 1rem}
-  h1{font-size:1.45rem!important} h2,h3{font-size:1.15rem!important}
-  [data-testid="stMetricValue"]{font-size:1.2rem}
-}
-</style>""", unsafe_allow_html=True)
 
+html,
+body {
+    background-color: #FF5841 !important;
+    margin: 0;
+    padding: 0;
+}
+
+[data-testid="stAppViewContainer"] {
+    background-color: #FF5841 !important;
+    min-height: 100vh;
+}
+
+[data-testid="stMain"] {
+    background-color: #FFFFFF !important;
+    border-radius: 20px !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12) !important;
+
+    margin: 14px 18px 14px 0 !important;
+    overflow: hidden !important;
+}
+
+[data-testid="stHeader"] {
+    background-color: #FFFFFF !important;
+}
+
+[data-testid="stMainBlockContainer"],
+.block-container {
+    padding: 1.75rem 2.25rem 2rem 2.25rem !important;
+    max-width: 1280px !important;
+    background-color: #FFFFFF !important;
+}
+
+[data-testid="stSidebar"] {
+    background-color: #FFFFFF !important;
+    border-right: 1px solid #EDEDED !important;
+
+    border-radius: 0 !important;
+}
+[data-testid="stSidebar"] > div:first-child {
+    padding-top: 1.25rem !important;
+}
+
+.sb-brand {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #C53678;
+    letter-spacing: -0.3px;
+    padding: 0 1.1rem 0.15rem 1.1rem;
+    margin-bottom: 0;
+    line-height: 1.2;
+}
+.sb-tagline {
+    font-size: 0.7rem;
+    color: #999999;
+    padding: 0 1.1rem 1rem 1.1rem;
+    border-bottom: 1px solid #F0F0F0;
+    margin-bottom: 0.9rem;
+    line-height: 1.4;
+}
+
+.sb-section-label {
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: #BBBBBB;
+    padding: 0 1.1rem 0.3rem 1.1rem;
+    margin-top: 0.25rem;
+}
+
+.sb-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 0.48rem 1.1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #444444;
+    border-radius: 8px;
+    margin: 1px 0.5rem;
+    cursor: default;
+    user-select: none;
+    transition: background 0.13s, color 0.13s;
+}
+.sb-nav-item:hover {
+    background: #FFF0F4;
+    color: #C53678;
+}
+.sb-nav-item.active {
+    background: #FFF0F4;
+    color: #C53678;
+    font-weight: 700;
+}
+.sb-nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #DDDDDD;
+    flex-shrink: 0;
+}
+.sb-nav-item.active .sb-nav-dot {
+    background: #C53678;
+}
+
+.sb-divider {
+    border: none;
+    border-top: 1px solid #F0F0F0;
+    margin: 0.7rem 0.5rem;
+}
+
+[data-testid="stSidebar"] .stButton > button {
+    background: #FAFAFA !important;
+    border: 1px solid #EEEEEE !important;
+    border-radius: 7px !important;
+    color: #444444 !important;
+    font-size: 0.76rem !important;
+    text-align: left !important;
+    padding: 0.3rem 0.55rem !important;
+    box-shadow: none !important;
+}
+[data-testid="stSidebar"] .stButton > button:hover {
+    border-color: #C53678 !important;
+    color: #C53678 !important;
+    background: #FFF0F4 !important;
+}
+
+h1 {
+    font-size: 1.6rem !important;
+    font-weight: 800 !important;
+    color: #000000 !important;
+    margin-bottom: 0.1rem !important;
+    letter-spacing: -0.4px;
+    line-height: 1.2;
+}
+h2 {
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    color: #000000 !important;
+    margin-bottom: 0.2rem !important;
+}
+h3 {
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+}
+
+.page-subtitle {
+    font-size: 0.88rem;
+    color: #666666;
+    margin-top: 0.1rem;
+    margin-bottom: 1.4rem;
+    line-height: 1.45;
+}
+
+.section-heading {
+    font-size: 0.97rem;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 0.1rem;
+    line-height: 1.3;
+}
+.section-desc {
+    font-size: 0.8rem;
+    color: #777777;
+    margin-bottom: 0.85rem;
+    line-height: 1.45;
+}
+
+[data-testid="stVerticalBlockBorderWrapper"] {
+    border: 1px solid #EDEDED !important;
+    border-radius: 14px !important;
+    background: #FFFFFF !important;
+    padding: 1.25rem 1.4rem !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+.stButton > button[kind="primary"],
+button[kind="primary"] {
+    background-color: #C53678 !important;
+    border-color: #C53678 !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    border-radius: 9px !important;
+    padding: 0.45rem 1.1rem !important;
+    font-size: 0.88rem !important;
+    box-shadow: 0 2px 6px rgba(197, 54, 120, 0.25) !important;
+    transition: background 0.15s, box-shadow 0.15s;
+}
+.stButton > button[kind="primary"]:hover,
+button[kind="primary"]:hover {
+    background-color: #a8295e !important;
+    border-color: #a8295e !important;
+    box-shadow: 0 3px 10px rgba(197, 54, 120, 0.35) !important;
+}
+
+.stButton > button:not([kind="primary"]) {
+    background-color: #FFFFFF !important;
+    border: 1px solid #DDDDDD !important;
+    color: #333333 !important;
+    font-weight: 500 !important;
+    border-radius: 9px !important;
+    font-size: 0.86rem !important;
+    box-shadow: none !important;
+    transition: border-color 0.13s, color 0.13s, background 0.13s;
+}
+.stButton > button:not([kind="primary"]):hover {
+    border-color: #C53678 !important;
+    color: #C53678 !important;
+    background-color: #FFF0F4 !important;
+}
+
+.stFormSubmitButton > button {
+    background-color: #FFFFFF !important;
+    border: 1px solid #DDDDDD !important;
+    color: #333333 !important;
+    border-radius: 9px !important;
+    font-weight: 500 !important;
+    font-size: 0.86rem !important;
+    box-shadow: none !important;
+}
+.stFormSubmitButton > button:hover {
+    border-color: #C53678 !important;
+    color: #C53678 !important;
+    background-color: #FFF0F4 !important;
+}
+
+[data-testid="stTextInput"] input,
+[data-testid="stTextArea"] textarea {
+    border: 1px solid #E2E2E2 !important;
+    border-radius: 8px !important;
+    background: #FAFAFA !important;
+    color: #000000 !important;
+    font-size: 0.88rem !important;
+    transition: border-color 0.13s, box-shadow 0.13s;
+}
+[data-testid="stTextInput"] input:focus,
+[data-testid="stTextArea"] textarea:focus {
+    border-color: #C53678 !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 0 0 2px rgba(197, 54, 120, 0.12) !important;
+    outline: none !important;
+}
+
+[data-testid="stSelectbox"] > div > div {
+    border: 1px solid #E2E2E2 !important;
+    border-radius: 8px !important;
+    background: #FAFAFA !important;
+}
+
+[data-testid="stFileUploader"] > section {
+    border: 1.5px dashed #CCCCCC !important;
+    border-radius: 10px !important;
+    background: #FAFAFA !important;
+    padding: 0.6rem !important;
+    transition: border-color 0.13s, background 0.13s;
+}
+[data-testid="stFileUploader"] > section:hover {
+    border-color: #C53678 !important;
+    background: #FFF8FB !important;
+}
+
+[data-testid="stFileUploader"] {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+[data-testid="stRadio"] label {
+    font-weight: 500 !important;
+    color: #000000 !important;
+    font-size: 0.88rem !important;
+}
+
+[data-testid="stProgress"] > div > div {
+    background: linear-gradient(90deg, #FF5841, #ff7a5c) !important;
+    border-radius: 4px !important;
+}
+[data-testid="stProgress"] > div {
+    background: #F0F0F0 !important;
+    border-radius: 4px !important;
+}
+
+[data-testid="stMetricLabel"]  { color: #555555 !important; font-size: 0.78rem; font-weight: 600; }
+[data-testid="stMetricValue"]  { color: #000000 !important; font-weight: 800; }
+[data-testid="stMetricDelta"]  { color: #888888 !important; }
+
+[data-testid="stAlert"] {
+    border-radius: 9px !important;
+}
+
+.stCaption, [data-testid="stCaptionContainer"] {
+    color: #777777 !important;
+    font-size: 0.79rem !important;
+}
+
+hr {
+    border: none !important;
+    border-top: 1px solid #F0F0F0 !important;
+    margin: 0.6rem 0 !important;
+}
+
+.badge-orange {
+    display: inline-block;
+    background: #FF5841;
+    color: #FFFFFF;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+.kb-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #FFF0F4;
+    border: 1px solid #F0C0D4;
+    border-radius: 20px;
+    padding: 3px 11px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #C53678;
+    margin-top: 5px;
+}
+
+[data-testid="stChatMessage"] {
+    border-radius: 10px !important;
+    margin-bottom: 0.35rem !important;
+}
+
+[data-testid="stSlider"] [data-baseweb="slider"] [role="slider"] {
+    background-color: #C53678 !important;
+}
+
+@media (max-width: 900px) {
+    [data-testid="stMain"] {
+        margin: 8px 8px 8px 0 !important;
+        border-radius: 14px !important;
+    }
+    .block-container,
+    [data-testid="stMainBlockContainer"] {
+        padding: 1.1rem 1rem !important;
+    }
+    h1 { font-size: 1.3rem !important; }
+}
+</style>
+""", unsafe_allow_html=True)
 
 def bootstrap():
-    s = st.session_state
-    if s.get("_ready"):
+    """Load a saved session from the URL ?sid= parameter on first page load."""
+    session_state = st.session_state
+    if session_state.get("_ready"):
         return
-    sid = st.query_params.get("sid")
-    data = storage.load(sid)
-    s.sid = sid if data else None
-    for k, v in (data or storage.DEFAULTS).items():
-        s[k] = v
-    s.restored = bool(data)
-    s._ready = True
 
+    session_id = st.query_params.get("sid")
+    session_data = storage.load(session_id)
+    session_state.sid = session_id if session_data else None
 
-def load_session(sid):
-    data = storage.load(sid)
-    if data:
-        for k, v in data.items():
-            st.session_state[k] = v
-        st.session_state.sid = sid
-        st.query_params["sid"] = sid
+    for key, value in (session_data or storage.DEFAULTS).items():
+        session_state[key] = value
 
+    session_state.restored = bool(session_data)
+    session_state._ready = True
+
+def load_session(session_id):
+    """Load a saved session by ID and update the URL."""
+    session_data = storage.load(session_id)
+    if session_data:
+        for key, value in session_data.items():
+            st.session_state[key] = value
+        st.session_state.sid = session_id
+        st.query_params["sid"] = session_id
 
 bootstrap()
 
-
 with st.sidebar:
-    st.header("💾 Saved sessions")
+    st.markdown('<div class="sb-brand">Support Coach</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="sb-tagline">AI coaching for support teams</div>',
+        unsafe_allow_html=True,
+    )
 
-    rows = storage.list_sessions()
+    current_view = st.session_state.get("view", "setup")
+    st.markdown('<div class="sb-section-label">Navigation</div>', unsafe_allow_html=True)
 
-    if not rows:
+    dashboard_class = "sb-nav-item active" if current_view == "setup" else "sb-nav-item"
+    sessions_class = (
+        "sb-nav-item active"
+        if current_view in ("console", "report")
+        else "sb-nav-item"
+    )
+    st.markdown(
+        f"""
+        <div class="{dashboard_class}">
+            <span class="sb-nav-dot"></span> Dashboard
+        </div>
+        <div class="{sessions_class}">
+            <span class="sb-nav-dot"></span> Sessions
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown('<hr class="sb-divider">', unsafe_allow_html=True)
+    st.markdown('<div class="sb-section-label">Saved Sessions</div>', unsafe_allow_html=True)
+
+    sessions = storage.list_sessions()
+    if not sessions:
         st.caption("No saved sessions yet.")
 
-    for sid, ts, mode in rows:
-        col1, col2 = st.columns([5, 1])
+    for session_id, timestamp, mode in sessions:
+        load_column, delete_column = st.columns([5, 1])
 
-        with col1:
+        with load_column:
             if st.button(
-                f"{mode} · {ts} · {sid}",
-                key=f"ld_{sid}",
-                use_container_width=True
+                f"{mode} · {timestamp} · {session_id}",
+                key=f"ld_{session_id}",
+                use_container_width=True,
             ):
-                load_session(sid)
+                load_session(session_id)
                 st.rerun()
 
-        with col2:
-            if st.button("🗑️", key=f"del_{sid}", help="Delete this session"):
-                st.session_state["delete_session_id"] = sid
+        with delete_column:
+            if st.button(key=f"del_{session_id}", help="Delete this session"):
+                st.session_state["delete_session_id"] = session_id
 
-    # Confirm deletion before removing the file
-    delete_sid = st.session_state.get("delete_session_id")
+    delete_session_id = st.session_state.get("delete_session_id")
+    if delete_session_id:
+        st.warning(f"Are you sure you want to delete session {delete_session_id}?")
+        yes_column, no_column = st.columns(2)
 
-    if delete_sid:
-        st.warning(f"Are you sure you want to delete session {delete_sid}?")
-
-        col_yes, col_no = st.columns(2)
-
-        with col_yes:
+        with yes_column:
             if st.button("Yes, delete", key="confirm_delete", type="primary"):
-                deleted = storage.delete_session(delete_sid)
-
+                deleted = storage.delete_session(delete_session_id)
                 if deleted:
                     st.success("Session deleted successfully.")
                 else:
                     st.error("Could not delete the session.")
-
                 st.session_state.pop("delete_session_id", None)
                 st.rerun()
 
-        with col_no:
+        with no_column:
             if st.button("Cancel", key="cancel_delete"):
                 st.session_state.pop("delete_session_id", None)
                 st.rerun()
 
+    st.markdown('<hr class="sb-divider">', unsafe_allow_html=True)
+    st.caption("Orchestrator: run_workflow()")
+    st.caption("Store: data/sessions/")
 
 view = st.session_state.view
 if view in ("console", "report") and not st.session_state.config:
     view = "setup"
+
 {"setup": setup.render, "console": console.render, "report": report.render}[view]()

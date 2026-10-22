@@ -1,163 +1,296 @@
-"""Three-panel live coaching console: conversation | coaching feed | knowledge panel."""
+"""Three-panel live coaching console for conversation, coaching, and knowledge."""
+
 import streamlit as st
 
 from utils import pipeline_stub as pipe
 from utils import rag_stub, storage
 from utils.validation import validate_message
 
+
+# Show a prominent warning when escalation risk reaches this value.
 RISK_ALERT = 70
 
 
 def add_message(role, text):
-    s = st.session_state
-    s.messages.append({"role": role, "text": text})
+    """Append a message, analyze customer messages, and save the session."""
+    session = st.session_state
+    session.messages.append({"role": role, "text": text})
+
     if role == "customer":
-        s.analyses.append(pipe.analyze_turn(text, s.messages, s.config))
+        session.analyses.append(
+            pipe.analyze_turn(text, session.messages, session.config)
+        )
     else:
-        s.tone.append(pipe.evaluate_agent_reply(text))
-    storage.save(s)
+        session.tone.append(pipe.evaluate_agent_reply(text))
+
+    storage.save(session)
 
 
 def n_customer():
-    return sum(m["role"] == "customer" for m in st.session_state.messages)
+    """Count customer messages in the current conversation."""
+    return sum(
+        message["role"] == "customer"
+        for message in st.session_state.messages
+    )
 
 
 def conversation_panel():
-    s, cfg = st.session_state, st.session_state.config
-    st.subheader("💬 Conversation")
-    box = st.container(height=380, border=True)
-    with box:
-        if not s.messages:
-            st.caption("No messages yet.")
-        for m in s.messages:
-            with st.chat_message("user" if m["role"] == "customer" else "assistant"):
-                st.write(m["text"])
+    """Display the conversation and controls for the selected mode."""
+    session = st.session_state
+    config = session.config
 
-    mode = cfg["mode"]
+    st.markdown(
+        '<p class="section-heading">Conversation</p>',
+        unsafe_allow_html=True,
+    )
+
+    conversation_box = st.container(height=380, border=True)
+    with conversation_box:
+        if not session.messages:
+            st.caption("No messages yet.")
+
+        for message in session.messages:
+            chat_role = (
+                "user" if message["role"] == "customer" else "assistant"
+            )
+            with st.chat_message(chat_role):
+                st.write(message["text"])
+
+    mode = config["mode"]
+
     if mode == "Simulator":
-        if not s.messages:
-            if st.button("▶ Start simulation", type="primary", use_container_width=True):
-                add_message("customer", pipe.simulate_customer(cfg, 0))
+        if not session.messages:
+            if st.button(
+                "Start simulation",
+                type="primary",
+                use_container_width=True,
+            ):
+                add_message("customer", pipe.simulate_customer(config, 0))
                 st.rerun()
         else:
             reply_form("Your reply to the customer", after=simulate_next)
+
     elif mode == "Manual":
-        with st.form("cust", clear_on_submit=True):
-            txt = st.text_area("Paste incoming customer message", height=80)
-            if st.form_submit_button("➕ Add customer message & coach", use_container_width=True):
-                err = validate_message(txt, "Customer message")
-                if err:
-                    st.error(err)
+        with st.form("customer_message", clear_on_submit=True):
+            text = st.text_area("Paste incoming customer message", height=80)
+            submitted = st.form_submit_button(
+                "Add message and coach",
+                use_container_width=True,
+            )
+
+            if submitted:
+                error = validate_message(text, "Customer message")
+                if error:
+                    st.error(error)
                 else:
-                    add_message("customer", txt.strip())
+                    add_message("customer", text.strip())
                     st.rerun()
+
         reply_form("Your reply")
-    else:  # Replay
-        script, i = cfg["replay_script"], s.replay_idx
-        st.progress(i / len(script), text=f"Message {i} of {len(script)}")
-        c1, c2 = st.columns(2)
-        if c1.button("⏭ Next message", type="primary", disabled=i >= len(script), use_container_width=True):
-            m = script[i]
-            s.replay_idx += 1
-            add_message(m["role"], m["text"])
+
+    else:  # Replay mode
+        script = config.get("replay_script", [])
+        index = session.replay_idx
+        total = len(script)
+
+        progress = index / total if total else 0
+        st.progress(progress, text=f"Message {index} of {total}")
+
+        col_next, col_restart = st.columns(2)
+
+        if col_next.button(
+            "Next message",
+            type="primary",
+            disabled=index >= total,
+            use_container_width=True,
+        ):
+            message = script[index]
+            session.replay_idx += 1
+            add_message(message["role"], message["text"])
             st.rerun()
-        if c2.button("↺ Restart replay", use_container_width=True):
-            s.messages, s.analyses, s.tone, s.replay_idx = [], [], [], 0
-            storage.save(s)
+
+        if col_restart.button("Restart replay", use_container_width=True):
+            session.messages = []
+            session.analyses = []
+            session.tone = []
+            session.replay_idx = 0
+            storage.save(session)
             st.rerun()
-        if i >= len(script):
-            st.success("Replay finished — end the session to see the report.")
+
+        if index >= total:
+            st.success("Replay finished. End the session to see the report.")
 
 
 def simulate_next():
-    cfg = st.session_state.config
-    k = n_customer()
-    if k < cfg["max_turns"]:
-        add_message("customer", pipe.simulate_customer(cfg, k))
+    """Add the next simulated customer message after an agent reply."""
+    config = st.session_state.config
+    customer_count = n_customer()
+
+    if customer_count < config["max_turns"]:
+        add_message(
+            "customer",
+            pipe.simulate_customer(config, customer_count),
+        )
     else:
-        st.session_state.flash = "Simulation complete — end the session to see the report."
+        st.session_state.flash = (
+            "Simulation complete. End the session to see the report."
+        )
 
 
 def reply_form(label, after=None):
-    with st.form(f"reply_{len(st.session_state.messages)}", clear_on_submit=True):
-        txt = st.text_area(label, height=80)
-        if st.form_submit_button("📤 Send reply", use_container_width=True):
-            err = validate_message(txt, "Reply")
-            if err:
-                st.error(err)
+    """Display a form for the agent to submit a reply."""
+    with st.form(
+        f"reply_{len(st.session_state.messages)}",
+        clear_on_submit=True,
+    ):
+        text = st.text_area(label, height=80)
+        submitted = st.form_submit_button(
+            "Send reply",
+            use_container_width=True,
+        )
+
+        if submitted:
+            error = validate_message(text, "Reply")
+            if error:
+                st.error(error)
             else:
-                add_message("agent", txt.strip())
+                add_message("agent", text.strip())
                 if after:
                     after()
                 st.rerun()
 
 
-def coaching_panel(a):
-    s = st.session_state
-    st.subheader("🧠 Coaching feed")
-    if not a:
-        st.info("Waiting for the first customer message…")
+def coaching_panel(analysis):
+    """Show the latest sentiment, intent, risk, and reply feedback."""
+    st.markdown(
+        '<p class="section-heading">Coaching Feed</p>',
+        unsafe_allow_html=True,
+    )
+
+    if not analysis:
+        st.info("Waiting for the first customer message...")
         return
-    c1, c2 = st.columns(2)
-    c1.metric("Sentiment", a["sentiment"], a["emotion"], delta_color="off")
-    c2.metric("Intent", a["intent"])
-    st.caption(f"Frustration · {a['frustration']}%")
-    st.progress(a["frustration"] / 100)
-    st.caption(f"Escalation risk · {a['risk']}%")
-    st.progress(a["risk"] / 100)
-    st.write(f"**Why:** {a['risk_reason']}")
-    if a["risk"] >= RISK_ALERT:
-        st.warning(f"**Recommended strategy:** {a['strategy']}")
+
+    col_sentiment, col_intent = st.columns(2)
+    col_sentiment.metric(
+        "Sentiment",
+        analysis["sentiment"],
+        analysis["emotion"],
+        delta_color="off",
+    )
+    col_intent.metric("Intent", analysis["intent"])
+
+    st.caption(f"Frustration — {analysis['frustration']}%")
+    st.progress(analysis["frustration"] / 100)
+
+    st.caption(f"Escalation risk — {analysis['risk']}%")
+    st.progress(analysis["risk"] / 100)
+
+    st.write(f"**Why:** {analysis['risk_reason']}")
+
+    if analysis["risk"] >= RISK_ALERT:
+        st.warning(f"**Recommended strategy:** {analysis['strategy']}")
+
     with st.container(border=True):
-        st.markdown("**💡 Suggested response**")
-        st.write(a["suggestion"])
-    if s.tone:
-        t = s.tone[-1]
+        st.markdown("**Suggested response**")
+        st.write(analysis["suggestion"])
+
+    session = st.session_state
+    if session.tone:
+        latest_tone = session.tone[-1]
         with st.container(border=True):
-            st.markdown(f"**🎯 Your last reply — tone & clarity: {t['score']}/100**")
-            for n in t["notes"]:
-                st.write(n)
+            st.markdown(
+                f"**Your last reply — tone and clarity: "
+                f"{latest_tone['score']}/100**"
+            )
+            for note in latest_tone["notes"]:
+                st.write(note)
 
 
-def knowledge_panel(a):
-    st.subheader("📚 Knowledge")
-    if not a:
+def knowledge_panel(analysis):
+    """Show the most relevant knowledge-base chunks for the latest message."""
+    st.markdown(
+        '<p class="section-heading">Knowledge</p>',
+        unsafe_allow_html=True,
+    )
+
+    if not analysis:
         st.caption("Relevant articles appear after each customer message.")
         return
+
     if rag_stub.stats()["total"] == 0:
-        st.warning("Knowledge base is empty — upload PDFs on the setup page.")
+        st.warning("Knowledge base is empty. Upload PDFs on the setup page.")
         return
-    if not a["chunks"]:
+
+    if not analysis["chunks"]:
         st.info("No relevant chunks found for this message.")
-    for i, c in enumerate(a["chunks"], 1):
+        return
+
+    for index, chunk in enumerate(analysis["chunks"], 1):
         with st.container(border=True):
-            st.markdown(f"**#{i} · 📄 {c['source']}** · p.{c['page']} · score {c['score']}")
-            st.caption(c["text"][:350] + ("…" if len(c["text"]) > 350 else ""))
+            st.markdown(
+                f"**#{index} — {chunk['source']}** "
+                f"— page {chunk['page']} "
+                f'<span class="badge-orange">score {chunk["score"]}</span>',
+                unsafe_allow_html=True,
+            )
+
+            preview = chunk["text"][:350]
+            if len(chunk["text"]) > 350:
+                preview += "..."
+            st.caption(preview)
 
 
 def render():
-    s, cfg = st.session_state, st.session_state.config
-    h1, h2, h3 = st.columns([5, 2, 2])
-    h1.title("🎧 Live Coaching Console")
-    h1.caption(f"Mode: **{cfg['mode']}** · Product: {cfg['product']} · Session `{s.sid}`")
-    if h2.button("⬅ Back to setup", use_container_width=True):
-        s.view = "setup"
-        storage.save(s)
+    """Render the page header and the three main console panels."""
+    session = st.session_state
+    config = session.config
+
+    col_title, col_back, col_end = st.columns([5, 2, 2])
+
+    col_title.markdown(
+        "<h1>Live Coaching Console</h1>",
+        unsafe_allow_html=True,
+    )
+    col_title.caption(
+        f"Mode: **{config['mode']}** — Product: {config['product']} "
+        f"— Session `{session.sid}`"
+    )
+
+    if col_back.button("Back to setup", use_container_width=True):
+        session.view = "setup"
+        storage.save(session)
         st.rerun()
-    if h3.button("🏁 End session", type="primary", use_container_width=True):
-        s.view = "report"
-        storage.save(s)
+
+    if col_end.button(
+        "End session",
+        type="primary",
+        use_container_width=True,
+    ):
+        session.view = "report"
+        storage.save(session)
         st.rerun()
-    if s.get("flash"):
-        st.info(s.pop("flash"))
-    a = s.analyses[-1] if s.analyses else None
-    if a and a["risk"] >= RISK_ALERT:
-        st.error(f"🚨 **HIGH ESCALATION RISK ({a['risk']}%)** — {a['risk_reason']}")
-    left, mid, right = st.columns([5, 4, 4], gap="medium")
+
+    if session.get("flash"):
+        st.info(session.pop("flash"))
+
+    analysis = session.analyses[-1] if session.analyses else None
+    if analysis and analysis["risk"] >= RISK_ALERT:
+        st.error(
+            f"HIGH ESCALATION RISK ({analysis['risk']}%) — "
+            f"{analysis['risk_reason']}"
+        )
+
+    left, middle, right = st.columns([5, 4, 4], gap="medium")
+
     with left:
         conversation_panel()
-    a = s.analyses[-1] if s.analyses else None  # refresh after new message
-    with mid:
-        coaching_panel(a)
+
+    # Refresh the latest analysis after the conversation panel renders.
+    analysis = session.analyses[-1] if session.analyses else None
+
+    with middle:
+        coaching_panel(analysis)
+
     with right:
-        knowledge_panel(a)
+        knowledge_panel(analysis)

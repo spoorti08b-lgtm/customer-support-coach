@@ -1,87 +1,219 @@
-"""Setup page: KB ingestion (PDF -> 'X chunks stored'), mode selection, scenario, validation."""
+"""Setup page for knowledge-base ingestion and session configuration."""
+
 import streamlit as st
 
 from utils import rag_stub, storage
 from utils.pipeline_stub import SAMPLE_TRANSCRIPT
 from utils.validation import MODES, parse_transcript, validate_setup
 
-MODE_INFO = {"Simulator": "🤖 AI customer sends messages turn by turn",
-             "Manual": "✍️ You paste incoming customer messages",
-             "Replay": "🎞️ Replay a transcript message by message"}
+
+# Short descriptions for the three interaction modes.
+MODE_INFO = {
+    "Simulator": "The AI sends customer messages turn by turn based on the scenario.",
+    "Manual": "You paste each incoming customer message yourself.",
+    "Replay": "Step through a saved transcript message by message.",
+}
 
 
 def kb_section():
-    st.subheader("1 · Support knowledge base")
-    st.caption("Upload FAQs, support docs and policy PDFs. They're chunked and indexed for retrieval.")
-    files = st.file_uploader("Upload PDF(s)", type=["pdf"], accept_multiple_files=True, key="kb_files")
-    c1, c2 = st.columns([2, 1])
-    if c1.button("📥 Ingest PDFs", use_container_width=True):
+    """Allow users to upload, index, and clear support documents."""
+    st.markdown(
+        '<p class="section-heading">Support Knowledge Base</p>'
+        '<p class="section-desc">'
+        "Upload PDF documents to help the assistant retrieve relevant "
+        "information during coaching sessions."
+        "</p>",
+        unsafe_allow_html=True,
+    )
+
+    files = st.file_uploader(
+        "Select PDF files to upload",
+        type=["pdf"],
+        accept_multiple_files=True,
+        key="kb_files",
+        help="Upload FAQ, policy, or support PDFs. They are chunked and indexed automatically.",
+    )
+
+    col_ingest, col_clear = st.columns([2, 1])
+
+    if col_ingest.button(
+        "Ingest PDFs",
+        use_container_width=True,
+        type="primary",
+    ):
         if not files:
-            st.error("Please choose at least one PDF file first.")
+            st.error("Please select at least one PDF file before ingesting.")
         else:
-            with st.spinner("Chunking and indexing…"):
-                res = rag_stub.ingest_pdfs(files)
-            for e in res["errors"]:
-                st.error(e)
-            if res["added"]:
-                st.success(f"✅ {res['added']} chunks stored from {len(res['files'])} file(s) "
-                           f"· {res['total']} total in knowledge base")
-    if c2.button("🗑️ Clear KB", use_container_width=True):
+            with st.spinner("Chunking and indexing..."):
+                result = rag_stub.ingest_pdfs(files)
+
+            for error in result["errors"]:
+                st.error(error)
+
+            if result["added"]:
+                st.success(
+                    f"{result['added']} chunks stored from "
+                    f"{len(result['files'])} file(s) - "
+                    f"{result['total']} total in knowledge base."
+                )
+
+    if col_clear.button("Clear Knowledge Base", use_container_width=True):
         rag_stub.clear()
         st.info("Knowledge base cleared.")
-    s = rag_stub.stats()
-    if s["total"]:
-        st.caption(f"📚 Indexed now: **{s['total']} chunks** · " + ", ".join(s["files"]))
+
+    # Show the current knowledge-base status.
+    knowledge_base = rag_stub.stats()
+
+    if knowledge_base["total"]:
+        files_str = ", ".join(knowledge_base["files"])
+        st.caption(
+            f"{knowledge_base['total']} chunks indexed: {files_str}"
+        )
     else:
-        st.caption("📚 Knowledge base is empty.")
+        st.caption(
+            "Knowledge base is empty. Upload PDFs above to enable retrieval."
+        )
 
 
 def render():
-    s = st.session_state
-    st.title("🎧 AI Customer Support Coaching Assistant")
-    if s.get("restored"):
-        st.success("Saved session reloaded after refresh. Use the sidebar to continue or start a new one.")
-        s.restored = False
+    """Render the setup page and start a coaching session."""
+    session = st.session_state
 
+    st.markdown(
+        "<h1>AI Customer Support Coaching Assistant</h1>"
+        '<p class="page-subtitle">'
+        "Practice real support conversations with AI feedback and company knowledge."
+        "</p>",
+        unsafe_allow_html=True,
+    )
+
+    if session.get("restored"):
+        st.success(
+            "Session restored. Use the sidebar to switch sessions "
+            "or fill in the form below to start a new one."
+        )
+        session.restored = False
+
+    # Knowledge-base upload card.
     with st.container(border=True):
         kb_section()
 
-    with st.container(border=True):
-        st.subheader("2 · Session setup")
-        mode = st.radio("Interaction mode", MODES, horizontal=True, key="f_mode",
-                        format_func=lambda m: f"{m}")
-        st.caption(MODE_INFO[mode])
-        product = st.text_input("Product context", key="f_product", placeholder="e.g. Acme Wireless Router X200")
-        scenario = st.text_area("Customer scenario", key="f_scenario", height=100,
-                                placeholder="e.g. Customer was charged twice and wants a refund.")
-        persona, max_turns, script = "Calm", 5, []
-        if mode == "Simulator":
-            c1, c2 = st.columns(2)
-            persona = c1.selectbox("Customer persona", ["Calm", "Impatient", "Angry", "Confused"], key="f_persona")
-            max_turns = c2.slider("Number of customer turns", 3, 8, 5, key="f_turns")
-        elif mode == "Replay":
-            src = st.radio("Transcript source", ["Bundled sample", "Upload .txt"], horizontal=True, key="f_src")
-            raw = SAMPLE_TRANSCRIPT
-            if src == "Upload .txt":
-                up = st.file_uploader("Transcript (.txt, lines like 'Customer: …' / 'Agent: …')",
-                                      type=["txt"], key="f_tx")
-                raw = up.getvalue().decode("utf-8", errors="ignore") if up else ""
-            script = parse_transcript(raw)
-            if script:
-                st.caption(f"Parsed {len(script)} messages.")
-        elif mode == "Manual":
-            st.caption("You'll paste each customer message in the console.")
+    st.write("")
 
-        if st.button("🚀 Start coaching session", type="primary", use_container_width=True):
-            errs = validate_setup(mode, product, scenario, script)
-            if errs:
-                st.error("Please fix the following:\n\n" + "\n".join(f"- {e}" for e in errs))
+    # Session configuration card.
+    with st.container(border=True):
+        st.markdown(
+            '<p class="section-heading">Session Setup</p>',
+            unsafe_allow_html=True,
+        )
+
+        mode = st.radio(
+            "Interaction Mode",
+            MODES,
+            horizontal=True,
+            key="f_mode",
+        )
+        st.caption(MODE_INFO[mode])
+
+        st.write("")
+
+        col_product, col_scenario = st.columns([1, 1], gap="medium")
+
+        product = col_product.text_input(
+            "Product Context",
+            key="f_product",
+            placeholder="e.g. Acme Wireless Router X200",
+        )
+        scenario = col_scenario.text_area(
+            "Customer Scenario",
+            key="f_scenario",
+            height=100,
+            placeholder="e.g. Customer was charged twice and wants a refund.",
+        )
+
+        # Show controls that apply to the selected mode.
+        persona, max_turns, script = "Calm", 5, []
+
+        if mode == "Simulator":
+            col_persona, col_turns = st.columns([1, 1], gap="medium")
+            persona = col_persona.selectbox(
+                "Customer Persona",
+                ["Calm", "Impatient", "Angry", "Confused"],
+                key="f_persona",
+            )
+            max_turns = col_turns.slider(
+                "Number of Customer Turns",
+                3,
+                8,
+                5,
+                key="f_turns",
+            )
+
+        elif mode == "Replay":
+            source = st.radio(
+                "Transcript source",
+                ["Bundled sample", "Upload .txt"],
+                horizontal=True,
+                key="f_src",
+            )
+
+            raw_transcript = SAMPLE_TRANSCRIPT
+
+            if source == "Upload .txt":
+                uploaded_transcript = st.file_uploader(
+                    "Transcript file (.txt with lines like 'Customer: ...' / 'Agent: ...')",
+                    type=["txt"],
+                    key="f_tx",
+                )
+                raw_transcript = (
+                    uploaded_transcript.getvalue().decode(
+                        "utf-8", errors="ignore"
+                    )
+                    if uploaded_transcript
+                    else ""
+                )
+
+            script = parse_transcript(raw_transcript)
+
+            if script:
+                st.caption(
+                    f"Parsed {len(script)} messages from transcript."
+                )
+
+        elif mode == "Manual":
+            st.caption(
+                "You will paste each customer message inside the coaching console."
+            )
+
+        st.write("")
+
+        if st.button(
+            "Start coaching session",
+            type="primary",
+            use_container_width=True,
+        ):
+            errors = validate_setup(mode, product, scenario, script)
+
+            if errors:
+                st.error(
+                    "Please fix the following before starting:\n\n"
+                    + "\n".join(f"- {error}" for error in errors)
+                )
             else:
-                s.sid = storage.new_id()
-                st.query_params["sid"] = s.sid
-                s.config = {"mode": mode, "product": product.strip(), "scenario": scenario.strip(),
-                            "persona": persona, "max_turns": max_turns, "replay_script": script}
-                s.messages, s.analyses, s.tone, s.replay_idx = [], [], [], 0
-                s.view = "console"
-                storage.save(s)
+                session.sid = storage.new_id()
+                st.query_params["sid"] = session.sid
+                session.config = {
+                    "mode": mode,
+                    "product": product.strip(),
+                    "scenario": scenario.strip(),
+                    "persona": persona,
+                    "max_turns": max_turns,
+                    "replay_script": script,
+                }
+                session.messages = []
+                session.analyses = []
+                session.tone = []
+                session.replay_idx = 0
+                session.view = "console"
+                storage.save(session)
                 st.rerun()

@@ -1,6 +1,55 @@
+
+# Python
 __pycache__/
+*.py[cod]
+*.pyo
+
+# Testing and coverage
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+
+# Virtual environments
 .venv/
+venv/
+env/
+
+# Environment variables and secrets
+.env
+.env/
+.env.local
+.env.*.local
+
+# IDE settings
+.idea/
+.vscode/
+*.code-workspace
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Build and distribution
+build/
+dist/
+*.egg-info/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3/
+
+# Generated application data
+chroma_db/
 data/sessions/
 data/kb_index.json
-.env
-*.py[cod]
+data/rag/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Temporary files
+*.tmp
+*.bak
