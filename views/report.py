@@ -1,8 +1,6 @@
-"""Post-interaction report — metrics, sentiment chart, coaching recommendations."""
 import streamlit as st
 
 from utils import storage
-
 
 def render():
     s = st.session_state
