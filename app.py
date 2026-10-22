@@ -1,11 +1,3 @@
-"""AI Customer Support Coaching Assistant — Streamlit frontend.
-
-Run from the project root:
-    py -3 -m streamlit run app.py
-
-Developed as a team project for Infosys Springboard Virtual Internship 7.0.
-Frontend by Member 2. Orchestrator integration by Member 4.
-"""
 import streamlit as st
 
 from utils import storage
@@ -18,31 +10,11 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ---------------------------------------------------------------------------
-# Design system
-#
-# Reference: warm dashboard with coral outer background, white workspace card.
-#
-# Palette:
-#   Outer background   #FF5841  sunset coral  (page shell around workspace)
-#   Workspace / cards  #FFFFFF  white
-#   Primary actions    #C53678  red-violet    (buttons, active nav)
-#   Accent highlights  #FF5841  sunset orange (progress bars, badges)
-#   Headings / text    #000000  black
-#   Secondary text     #666666  muted gray
-#   Borders            #E8E8E8  light gray
-#   Hover surface      #FFF0F4  very pale pink
-#   Selected nav bg    #FFF0F4  very pale pink
-# ---------------------------------------------------------------------------
 st.markdown("""
 <style>
-/* ══════════════════════════════════════════════════════
-   1. CORAL PAGE SHELL
-   The entire page gets a coral background.
-   The white workspace (stMain) sits on top of it.
-   ══════════════════════════════════════════════════════ */
 
-/* Coral fills the whole browser viewport */
+# 1. CORAL PAGE SHELL
+
 html,
 body {
     background-color: #FF5841 !important;
@@ -50,18 +22,14 @@ body {
     padding: 0;
 }
 
-/* stAppViewContainer is the flex container holding sidebar + main */
 [data-testid="stAppViewContainer"] {
     background-color: #FF5841 !important;
     min-height: 100vh;
 }
 
-/* ══════════════════════════════════════════════════════
-   2. WHITE WORKSPACE  (stMain)
-   stMain wraps the header strip AND the block container.
-   Give it a white background, rounded corners, subtle shadow.
-   Add a right margin so coral peeks out on the right side.
-   ══════════════════════════════════════════════════════ */
+
+# 2. WHITE WORKSPACE  (stMain)
+ 
 [data-testid="stMain"] {
     background-color: #FFFFFF !important;
     border-radius: 20px !important;
@@ -71,7 +39,6 @@ body {
     overflow: hidden !important;
 }
 
-/* The header strip inside stMain must also be white */
 [data-testid="stHeader"] {
     background-color: #FFFFFF !important;
 }
@@ -84,20 +51,16 @@ body {
     background-color: #FFFFFF !important;
 }
 
-/* ══════════════════════════════════════════════════════
-   3. SIDEBAR — white panel, compact, flush left
-   ══════════════════════════════════════════════════════ */
+# 3. SIDEBAR — white panel, compact, flush left
 [data-testid="stSidebar"] {
     background-color: #FFFFFF !important;
     border-right: 1px solid #EDEDED !important;
-    /* No rounded corners on sidebar — it's flush left */
     border-radius: 0 !important;
 }
 [data-testid="stSidebar"] > div:first-child {
     padding-top: 1.25rem !important;
 }
 
-/* ── Brand ─────────────────────────────────── */
 .sb-brand {
     font-size: 1.15rem;
     font-weight: 800;
@@ -116,7 +79,6 @@ body {
     line-height: 1.4;
 }
 
-/* ── Section label ──────────────────────────── */
 .sb-section-label {
     font-size: 0.66rem;
     font-weight: 700;
@@ -127,7 +89,6 @@ body {
     margin-top: 0.25rem;
 }
 
-/* ── Nav items ──────────────────────────────── */
 .sb-nav-item {
     display: flex;
     align-items: center;
@@ -162,14 +123,12 @@ body {
     background: #C53678;
 }
 
-/* ── Sidebar divider ────────────────────────── */
 .sb-divider {
     border: none;
     border-top: 1px solid #F0F0F0;
     margin: 0.7rem 0.5rem;
 }
 
-/* ── Sidebar buttons (session load) ─────────── */
 [data-testid="stSidebar"] .stButton > button {
     background: #FAFAFA !important;
     border: 1px solid #EEEEEE !important;
@@ -186,9 +145,7 @@ body {
     background: #FFF0F4 !important;
 }
 
-/* ══════════════════════════════════════════════════════
-   4. TYPOGRAPHY
-   ══════════════════════════════════════════════════════ */
+# 4. TYPOGRAPHY
 h1 {
     font-size: 1.6rem !important;
     font-weight: 800 !important;
@@ -209,7 +166,6 @@ h3 {
     color: #000000 !important;
 }
 
-/* Page subtitle */
 .page-subtitle {
     font-size: 0.88rem;
     color: #666666;
@@ -218,7 +174,6 @@ h3 {
     line-height: 1.45;
 }
 
-/* Section card heading */
 .section-heading {
     font-size: 0.97rem;
     font-weight: 700;
@@ -233,9 +188,8 @@ h3 {
     line-height: 1.45;
 }
 
-/* ══════════════════════════════════════════════════════
-   5. CARDS  (st.container with border=True)
-   ══════════════════════════════════════════════════════ */
+#  5. CARDS  (st.container with border=True)
+
 [data-testid="stVerticalBlockBorderWrapper"] {
     border: 1px solid #EDEDED !important;
     border-radius: 14px !important;
@@ -244,11 +198,7 @@ h3 {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
 }
 
-/* ══════════════════════════════════════════════════════
-   6. BUTTONS
-   ══════════════════════════════════════════════════════ */
-
-/* Primary (red-violet) */
+  # 6. BUTTONS
 .stButton > button[kind="primary"],
 button[kind="primary"] {
     background-color: #C53678 !important;
@@ -301,9 +251,7 @@ button[kind="primary"]:hover {
     background-color: #FFF0F4 !important;
 }
 
-/* ══════════════════════════════════════════════════════
-   7. FORM INPUTS
-   ══════════════════════════════════════════════════════ */
+#  7. FORM INPUTS
 [data-testid="stTextInput"] input,
 [data-testid="stTextArea"] textarea {
     border: 1px solid #E2E2E2 !important;
@@ -321,17 +269,12 @@ button[kind="primary"]:hover {
     outline: none !important;
 }
 
-/* Selectbox */
 [data-testid="stSelectbox"] > div > div {
     border: 1px solid #E2E2E2 !important;
     border-radius: 8px !important;
     background: #FAFAFA !important;
 }
 
-/* ── File uploader ─────────────────────────────
-   Remove the bright pink dashed border.
-   Use a soft light-gray area instead.
-   ─────────────────────────────────────────────── */
 [data-testid="stFileUploader"] > section {
     border: 1.5px dashed #CCCCCC !important;
     border-radius: 10px !important;
@@ -349,19 +292,14 @@ button[kind="primary"]:hover {
     background: transparent !important;
     padding: 0 !important;
 }
-
-/* ══════════════════════════════════════════════════════
-   8. RADIO BUTTONS
-   ══════════════════════════════════════════════════════ */
+   # 8. RADIO BUTTONS
 [data-testid="stRadio"] label {
     font-weight: 500 !important;
     color: #000000 !important;
     font-size: 0.88rem !important;
 }
 
-/* ══════════════════════════════════════════════════════
-   9. PROGRESS BARS — sunset orange
-   ══════════════════════════════════════════════════════ */
+  # 9. PROGRESS BARS — sunset orange
 [data-testid="stProgress"] > div > div {
     background: linear-gradient(90deg, #FF5841, #ff7a5c) !important;
     border-radius: 4px !important;
@@ -371,42 +309,32 @@ button[kind="primary"]:hover {
     border-radius: 4px !important;
 }
 
-/* ══════════════════════════════════════════════════════
-   10. METRICS
-   ══════════════════════════════════════════════════════ */
+
+  # 10. METRICS
 [data-testid="stMetricLabel"]  { color: #555555 !important; font-size: 0.78rem; font-weight: 600; }
 [data-testid="stMetricValue"]  { color: #000000 !important; font-weight: 800; }
 [data-testid="stMetricDelta"]  { color: #888888 !important; }
 
-/* ══════════════════════════════════════════════════════
-   11. ALERTS AND STATUS
-   ══════════════════════════════════════════════════════ */
+ #  11. ALERTS AND STATUS
+ 
 [data-testid="stAlert"] {
     border-radius: 9px !important;
 }
 
-/* ══════════════════════════════════════════════════════
-   12. CAPTIONS
-   ══════════════════════════════════════════════════════ */
+  # 12. CAPTIONS
 .stCaption, [data-testid="stCaptionContainer"] {
     color: #777777 !important;
     font-size: 0.79rem !important;
 }
 
-/* ══════════════════════════════════════════════════════
-   13. DIVIDERS
-   ══════════════════════════════════════════════════════ */
+   # 13. DIVIDERS
 hr {
     border: none !important;
     border-top: 1px solid #F0F0F0 !important;
     margin: 0.6rem 0 !important;
 }
 
-/* ══════════════════════════════════════════════════════
-   14. BADGE HELPERS
-   ══════════════════════════════════════════════════════ */
-
-/* Orange score badge */
+ #  14. BADGE HELPERS
 .badge-orange {
     display: inline-block;
     background: #FF5841;
@@ -418,8 +346,6 @@ hr {
     margin-left: 5px;
     vertical-align: middle;
 }
-
-/* KB chunk count pill */
 .kb-status {
     display: inline-flex;
     align-items: center;
@@ -433,25 +359,19 @@ hr {
     color: #C53678;
     margin-top: 5px;
 }
-
-/* ══════════════════════════════════════════════════════
    15. CHAT MESSAGES
-   ══════════════════════════════════════════════════════ */
 [data-testid="stChatMessage"] {
     border-radius: 10px !important;
     margin-bottom: 0.35rem !important;
 }
 
-/* ══════════════════════════════════════════════════════
-   16. SLIDER
-   ══════════════════════════════════════════════════════ */
+   # 16. SLIDER
 [data-testid="stSlider"] [data-baseweb="slider"] [role="slider"] {
     background-color: #C53678 !important;
 }
 
-/* ══════════════════════════════════════════════════════
-   17. RESPONSIVE ADJUSTMENTS
-   ══════════════════════════════════════════════════════ */
+  # 17. RESPONSIVE ADJUSTMENTS
+ 
 @media (max-width: 900px) {
     [data-testid="stMain"] {
         margin: 8px 8px 8px 0 !important;
@@ -466,10 +386,8 @@ hr {
 </style>
 """, unsafe_allow_html=True)
 
-
-# ---------------------------------------------------------------------------
 # Session bootstrap — restore from ?sid= URL param on first load
-# ---------------------------------------------------------------------------
+
 def bootstrap():
     """Load a saved session from the URL ?sid= parameter on first page load."""
     s = st.session_state
@@ -495,10 +413,8 @@ def load_session(sid):
 
 
 bootstrap()
-
-# ---------------------------------------------------------------------------
 # Sidebar — brand + navigation + saved sessions
-# ---------------------------------------------------------------------------
+
 with st.sidebar:
 
     # Brand
@@ -568,9 +484,8 @@ with st.sidebar:
     st.caption("Orchestrator: run_workflow()")
     st.caption("Store: data/sessions/")
 
-# ---------------------------------------------------------------------------
 # Route to the correct view
-# ---------------------------------------------------------------------------
+
 view = st.session_state.view
 if view in ("console", "report") and not st.session_state.config:
     view = "setup"
