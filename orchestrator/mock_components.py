@@ -16,13 +16,12 @@ from customer_support_coach.data_models import (
 logger = logging.getLogger(__name__)
 
 # Temporary Session Manager
-
 class MockSessionManager:
     def __init__(self):
-        self._store: dict[str, Session] = {}       # Pre-load a couple of test sessions so demos work out of the box.
+        self._store: dict[str, Session] = {}      
         self._add_default_sessions()
 
-    def _add_default_sessions(self) -> None:        #Add sessions that tests and the demo script can rely on.
+    def _add_default_sessions(self) -> None:        
         demo_session = Session(
             session_id="sess-demo01",
             mode=InteractionMode.MANUAL,
