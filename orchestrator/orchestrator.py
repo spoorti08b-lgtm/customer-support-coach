@@ -11,7 +11,6 @@ from orchestrator.schemas import WorkflowRequest, WorkflowResponse
 
 logger = logging.getLogger(__name__)
 
-
 def _failed(session_id: str | None, error: str) -> WorkflowResponse:
     """Build a failed WorkflowResponse."""
     return WorkflowResponse(
@@ -20,7 +19,6 @@ def _failed(session_id: str | None, error: str) -> WorkflowResponse:
         result=None,
         error=error,
     )
-
 
 def run_workflow(
     request: WorkflowRequest,
