@@ -1,15 +1,3 @@
-"""
-Shared Data Models and Validation
-Developed by Vikas M
-Infosys Springboard Virtual Internship 7.0
-Project: AI Customer Support Coaching Assistant
-
-NOTE: This file is owned by Member 1 (Data Models).
-      It is copied here temporarily so the Orchestrator
-      module can be developed and tested independently.
-      Replace with the real import once the team merges.
-"""
-
 import json
 import re
 import uuid
@@ -20,29 +8,22 @@ from typing import Any
 
 
 class ValidationError(ValueError):
-    """Raised when input data violates model validation rules."""
-
-
 class InteractionMode(str, Enum):
     SIMULATOR = "simulator"
     MANUAL = "manual"
     REPLAY = "replay"
-
 
 class SessionStatus(str, Enum):
     ACTIVE = "active"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
 
-
 class Speaker(str, Enum):
     CUSTOMER = "customer"
     AGENT = "agent"
     SYSTEM = "system"
 
-
 def validate_id(value: str, field_name: str) -> str:
-    """Validate an identifier containing 1-128 permitted characters."""
     if not isinstance(value, str) or not re.fullmatch(
         r"[A-Za-z0-9_.:-]{1,128}", value
     ):
@@ -51,18 +32,14 @@ def validate_id(value: str, field_name: str) -> str:
         )
     return value
 
-
 def validate_text(value: str, field_name: str) -> str:
-    """Require non-empty text and remove surrounding whitespace."""
     if not isinstance(value, str) or not value.strip():
         raise ValidationError(
             f"{field_name} must be a non-empty string."
         )
     return value.strip()
 
-
 def validate_timestamp(value: datetime, field_name: str) -> datetime:
-    """Require a timezone-aware datetime and normalize it to UTC."""
     if not isinstance(value, datetime):
         raise ValidationError(f"{field_name} must be a datetime.")
 
@@ -70,12 +47,9 @@ def validate_timestamp(value: datetime, field_name: str) -> datetime:
         raise ValidationError(
             f"{field_name} must include a timezone."
         )
-
     return value.astimezone(timezone.utc)
 
-
 def validate_json_object(value: dict, field_name: str) -> dict:
-    """Require a dictionary containing strict JSON-compatible data."""
     if not isinstance(value, dict):
         raise ValidationError(f"{field_name} must be a dictionary.")
 
@@ -88,9 +62,7 @@ def validate_json_object(value: dict, field_name: str) -> dict:
 
     return value
 
-
 def _normalize_enum(enum_type: type[Enum], value: Any, field_name: str):
-    """Convert a valid enum value or raise a consistent validation error."""
     try:
         return enum_type(value)
     except (ValueError, TypeError):
@@ -99,11 +71,8 @@ def _normalize_enum(enum_type: type[Enum], value: Any, field_name: str):
             f"{field_name} must be one of: {allowed}."
         ) from None
 
-
 @dataclass
 class Session:
-    """Represents one customer-support training session."""
-
     mode: InteractionMode = InteractionMode.SIMULATOR
     product_context: dict[str, Any] = field(default_factory=dict)
     scenario: dict[str, Any] | str | None = None
@@ -162,7 +131,6 @@ class Session:
             raise ValidationError("updated_at cannot precede created_at.")
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert the session into JSON-compatible data."""
         return {
             "session_id": self.session_id,
             "mode": self.mode.value,
@@ -175,11 +143,8 @@ class Session:
             "metadata": self.metadata,
         }
 
-
 @dataclass
 class ConversationMessage:
-    """Represents one message in a conversation."""
-
     session_id: str
     speaker: Speaker
     content: str
@@ -210,7 +175,6 @@ class ConversationMessage:
         self.metadata = validate_json_object(self.metadata, "metadata")
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert the message into JSON-compatible data."""
         return {
             "message_id": self.message_id,
             "session_id": self.session_id,
@@ -224,8 +188,6 @@ class ConversationMessage:
 
 @dataclass
 class AgentResult:
-    """Stores the result produced by an AI agent."""
-
     session_id: str
     agent_type: str
     result: dict[str, Any]
@@ -250,7 +212,6 @@ class AgentResult:
         self.created_at = validate_timestamp(self.created_at, "created_at")
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert the agent result into JSON-compatible data."""
         return {
             "result_id": self.result_id,
             "session_id": self.session_id,
