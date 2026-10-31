@@ -1,0 +1,804 @@
+{
+  "dataset_size": 22,
+  "answerable_count": 14,
+  "unanswerable_count": 8,
+  "evaluated_count": 22,
+  "k": 3,
+  "metrics": {
+    "recall_at_k_doc": 1.0,
+    "recall_at_k_chunk": 1.0,
+    "precision_at_k_doc": 0.3333,
+    "precision_at_k_chunk": 0.3809,
+    "mrr": 1.0,
+    "ndcg_at_k": 1.0,
+    "source_attribution_accuracy": 1.0,
+    "no_match_precision": 1.0,
+    "no_match_recall": 0.5,
+    "no_match_f1": 0.6667,
+    "no_match_accuracy": 0.8182,
+    "contingency_table": {
+      "tp": 4,
+      "fp": 0,
+      "tn": 14,
+      "fn": 4
+    }
+  },
+  "latency": {
+    "count": 22,
+    "mean_ms": 197.97,
+    "median_ms": 39.08,
+    "p95_ms": 61.34,
+    "min_ms": 28.99,
+    "max_ms": 3493.77
+  },
+  "category_breakdown": {
+    "ambiguous_history": {
+      "count": 3,
+      "answerable": true,
+      "doc_recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    "contextual_followup": {
+      "count": 3,
+      "answerable": true,
+      "doc_recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    "direct": {
+      "count": 4,
+      "answerable": true,
+      "doc_recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    "in_domain_unanswerable": {
+      "count": 4,
+      "answerable": false,
+      "correct_no_match": 0,
+      "rejection_accuracy": 0.0
+    },
+    "out_of_domain": {
+      "count": 4,
+      "answerable": false,
+      "correct_no_match": 4,
+      "rejection_accuracy": 1.0
+    },
+    "paraphrased": {
+      "count": 4,
+      "answerable": true,
+      "doc_recall_at_k": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    }
+  },
+  "per_query_results": [
+    {
+      "query_id": "eval_01",
+      "category": "direct",
+      "message": "What is the return window for unused items?",
+      "synthesized_query": "Refund / billing - What is the return window for unused items?",
+      "is_answerable": true,
+      "expected_docs": [
+        "returns_and_refunds.pdf"
+      ],
+      "expected_chunks": [
+        "a2ce9b7bd3c12470_p1_c0"
+      ],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 3493.77,
+      "retrieved_count": 3,
+      "top_doc": "returns_and_refunds.pdf",
+      "top_chunk": "a2ce9b7bd3c12470_p1_c0",
+      "top_score": 0.623,
+      "retrieved_docs": [
+        "returns_and_refunds.pdf",
+        "returns_and_refunds.pdf",
+        "shipping_and_delivery.pdf"
+      ],
+      "retrieved_chunks": [
+        "a2ce9b7bd3c12470_p1_c0",
+        "a2ce9b7bd3c12470_p1_c1",
+        "e11e1dd62150604a_p2_c0"
+      ],
+      "doc_recall_at_k": 1.0,
+      "chunk_recall_at_k": 1.0,
+      "doc_precision_at_k": 0.3333,
+      "chunk_precision_at_k": 0.3333,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    {
+      "query_id": "eval_02",
+      "category": "direct",
+      "message": "How long is a password reset link valid?",
+      "synthesized_query": "Account access - How long is a password reset link valid?",
+      "is_answerable": true,
+      "expected_docs": [
+        "account_and_password_faq.pdf"
+      ],
+      "expected_chunks": [
+        "40127cfe9c0a26e5_p1_c0"
+      ],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 61.34,
+      "retrieved_count": 3,
+      "top_doc": "account_and_password_faq.pdf",
+      "top_chunk": "40127cfe9c0a26e5_p1_c0",
+      "top_score": 0.6067,
+      "retrieved_docs": [
+        "account_and_password_faq.pdf",
+        "account_and_password_faq.pdf",
+        "returns_and_refunds.pdf"
+      ],
+      "retrieved_chunks": [
+        "40127cfe9c0a26e5_p1_c0",
+        "40127cfe9c0a26e5_p1_c1",
+        "a2ce9b7bd3c12470_p1_c0"
+      ],
+      "doc_recall_at_k": 1.0,
+      "chunk_recall_at_k": 1.0,
+      "doc_precision_at_k": 0.3333,
+      "chunk_precision_at_k": 0.3333,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    {
+      "query_id": "eval_03",
+      "category": "direct",
+      "message": "How many days does standard delivery take?",
+      "synthesized_query": "Delivery / order - How many days does standard delivery take?",
+      "is_answerable": true,
+      "expected_docs": [
+        "shipping_and_delivery.pdf"
+      ],
+      "expected_chunks": [
+        "e11e1dd62150604a_p1_c0"
+      ],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 61.04,
+      "retrieved_count": 3,
+      "top_doc": "shipping_and_delivery.pdf",
+      "top_chunk": "e11e1dd62150604a_p1_c0",
+      "top_score": 0.5758,
+      "retrieved_docs": [
+        "shipping_and_delivery.pdf",
+        "shipping_and_delivery.pdf",
+        "returns_and_refunds.pdf"
+      ],
+      "retrieved_chunks": [
+        "e11e1dd62150604a_p1_c0",
+        "e11e1dd62150604a_p2_c0",
+        "a2ce9b7bd3c12470_p1_c1"
+      ],
+      "doc_recall_at_k": 1.0,
+      "chunk_recall_at_k": 1.0,
+      "doc_precision_at_k": 0.3333,
+      "chunk_precision_at_k": 0.3333,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    {
+      "query_id": "eval_04",
+      "category": "direct",
+      "message": "How do I turn on two-step verification for my account?",
+      "synthesized_query": "Account access - How do I turn on two-step verification for my account?",
+      "is_answerable": true,
+      "expected_docs": [
+        "account_and_password_faq.pdf"
+      ],
+      "expected_chunks": [
+        "40127cfe9c0a26e5_p2_c0"
+      ],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 39.53,
+      "retrieved_count": 3,
+      "top_doc": "account_and_password_faq.pdf",
+      "top_chunk": "40127cfe9c0a26e5_p2_c0",
+      "top_score": 0.575,
+      "retrieved_docs": [
+        "account_and_password_faq.pdf",
+        "account_and_password_faq.pdf",
+        "account_and_password_faq.pdf"
+      ],
+      "retrieved_chunks": [
+        "40127cfe9c0a26e5_p2_c0",
+        "40127cfe9c0a26e5_p1_c0",
+        "40127cfe9c0a26e5_p1_c1"
+      ],
+      "doc_recall_at_k": 1.0,
+      "chunk_recall_at_k": 1.0,
+      "doc_precision_at_k": 0.3333,
+      "chunk_precision_at_k": 0.3333,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    {
+      "query_id": "eval_05",
+      "category": "paraphrased",
+      "message": "Can I get a refund if I already opened my software license card?",
+      "synthesized_query": "Refund / billing - Can I get a refund if I already opened my software license card?",
+      "is_answerable": true,
+      "expected_docs": [
+        "returns_and_refunds.pdf"
+      ],
+      "expected_chunks": [
+        "a2ce9b7bd3c12470_p1_c0"
+      ],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 37.12,
+      "retrieved_count": 3,
+      "top_doc": "returns_and_refunds.pdf",
+      "top_chunk": "a2ce9b7bd3c12470_p1_c0",
+      "top_score": 0.4366,
+      "retrieved_docs": [
+        "returns_and_refunds.pdf",
+        "returns_and_refunds.pdf",
+        "account_and_password_faq.pdf"
+      ],
+      "retrieved_chunks": [
+        "a2ce9b7bd3c12470_p1_c0",
+        "a2ce9b7bd3c12470_p1_c1",
+        "40127cfe9c0a26e5_p1_c1"
+      ],
+      "doc_recall_at_k": 1.0,
+      "chunk_recall_at_k": 1.0,
+      "doc_precision_at_k": 0.3333,
+      "chunk_precision_at_k": 0.3333,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    {
+      "query_id": "eval_06",
+      "category": "paraphrased",
+      "message": "My account got blocked after typing the wrong passcode several times. How long do I wait?",
+      "synthesized_query": "Account access - My account got blocked after typing the wrong passcode several times. How long do I wait?",
+      "is_answerable": true,
+      "expected_docs": [
+        "account_and_password_faq.pdf"
+      ],
+      "expected_chunks": [
+        "40127cfe9c0a26e5_p1_c0",
+        "40127cfe9c0a26e5_p1_c1"
+      ],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 41.91,
+      "retrieved_count": 3,
+      "top_doc": "account_and_password_faq.pdf",
+      "top_chunk": "40127cfe9c0a26e5_p1_c0",
+      "top_score": 0.5665,
+      "retrieved_docs": [
+        "account_and_password_faq.pdf",
+        "account_and_password_faq.pdf",
+        "account_and_password_faq.pdf"
+      ],
+      "retrieved_chunks": [
+        "40127cfe9c0a26e5_p1_c0",
+        "40127cfe9c0a26e5_p1_c1",
+        "40127cfe9c0a26e5_p2_c0"
+      ],
+      "doc_recall_at_k": 1.0,
+      "chunk_recall_at_k": 1.0,
+      "doc_precision_at_k": 0.3333,
+      "chunk_precision_at_k": 0.6667,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    {
+      "query_id": "eval_07",
+      "category": "paraphrased",
+      "message": "I need expedited shipping. When will my package arrive if I place the order right now at 11 am?",
+      "synthesized_query": "Delivery / order - I need expedited shipping. When will my package arrive if I place the order right now at 11 am?",
+      "is_answerable": true,
+      "expected_docs": [
+        "shipping_and_delivery.pdf"
+      ],
+      "expected_chunks": [
+        "e11e1dd62150604a_p1_c0"
+      ],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 42.6,
+      "retrieved_count": 3,
+      "top_doc": "shipping_and_delivery.pdf",
+      "top_chunk": "e11e1dd62150604a_p1_c0",
+      "top_score": 0.4658,
+      "retrieved_docs": [
+        "shipping_and_delivery.pdf",
+        "shipping_and_delivery.pdf",
+        "returns_and_refunds.pdf"
+      ],
+      "retrieved_chunks": [
+        "e11e1dd62150604a_p1_c0",
+        "e11e1dd62150604a_p2_c0",
+        "a2ce9b7bd3c12470_p1_c0"
+      ],
+      "doc_recall_at_k": 1.0,
+      "chunk_recall_at_k": 1.0,
+      "doc_precision_at_k": 0.3333,
+      "chunk_precision_at_k": 0.3333,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    {
+      "query_id": "eval_08",
+      "category": "paraphrased",
+      "message": "I want to update the email address linked to my account. Where in settings do I do that?",
+      "synthesized_query": "Account access - I want to update the email address linked to my account. Where in settings do I do that?",
+      "is_answerable": true,
+      "expected_docs": [
+        "account_and_password_faq.pdf"
+      ],
+      "expected_chunks": [
+        "40127cfe9c0a26e5_p2_c0"
+      ],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 36.62,
+      "retrieved_count": 2,
+      "top_doc": "account_and_password_faq.pdf",
+      "top_chunk": "40127cfe9c0a26e5_p2_c0",
+      "top_score": 0.5891,
+      "retrieved_docs": [
+        "account_and_password_faq.pdf",
+        "account_and_password_faq.pdf"
+      ],
+      "retrieved_chunks": [
+        "40127cfe9c0a26e5_p2_c0",
+        "40127cfe9c0a26e5_p1_c0"
+      ],
+      "doc_recall_at_k": 1.0,
+      "chunk_recall_at_k": 1.0,
+      "doc_precision_at_k": 0.3333,
+      "chunk_precision_at_k": 0.3333,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    {
+      "query_id": "eval_09",
+      "category": "contextual_followup",
+      "message": "How long do I have to report it?",
+      "synthesized_query": "Refund / billing - How long do I have to report it? (re: My package arrived yesterday but the screen is cracked)",
+      "is_answerable": true,
+      "expected_docs": [
+        "returns_and_refunds.pdf"
+      ],
+      "expected_chunks": [
+        "a2ce9b7bd3c12470_p1_c1"
+      ],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 34.99,
+      "retrieved_count": 3,
+      "top_doc": "returns_and_refunds.pdf",
+      "top_chunk": "a2ce9b7bd3c12470_p1_c1",
+      "top_score": 0.6148,
+      "retrieved_docs": [
+        "returns_and_refunds.pdf",
+        "returns_and_refunds.pdf",
+        "shipping_and_delivery.pdf"
+      ],
+      "retrieved_chunks": [
+        "a2ce9b7bd3c12470_p1_c1",
+        "a2ce9b7bd3c12470_p1_c0",
+        "e11e1dd62150604a_p2_c0"
+      ],
+      "doc_recall_at_k": 1.0,
+      "chunk_recall_at_k": 1.0,
+      "doc_precision_at_k": 0.3333,
+      "chunk_precision_at_k": 0.3333,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    {
+      "query_id": "eval_10",
+      "category": "contextual_followup",
+      "message": "What information do you need to unlock it immediately?",
+      "synthesized_query": "Account access - What information do you need to unlock it immediately? (re: I entered the wrong password five times and my account)",
+      "is_answerable": true,
+      "expected_docs": [
+        "account_and_password_faq.pdf"
+      ],
+      "expected_chunks": [
+        "40127cfe9c0a26e5_p1_c0",
+        "40127cfe9c0a26e5_p1_c1"
+      ],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 37.63,
+      "retrieved_count": 3,
+      "top_doc": "account_and_password_faq.pdf",
+      "top_chunk": "40127cfe9c0a26e5_p1_c0",
+      "top_score": 0.6642,
+      "retrieved_docs": [
+        "account_and_password_faq.pdf",
+        "account_and_password_faq.pdf",
+        "account_and_password_faq.pdf"
+      ],
+      "retrieved_chunks": [
+        "40127cfe9c0a26e5_p1_c0",
+        "40127cfe9c0a26e5_p1_c1",
+        "40127cfe9c0a26e5_p2_c0"
+      ],
+      "doc_recall_at_k": 1.0,
+      "chunk_recall_at_k": 1.0,
+      "doc_precision_at_k": 0.3333,
+      "chunk_precision_at_k": 0.6667,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    {
+      "query_id": "eval_11",
+      "category": "contextual_followup",
+      "message": "Can I still change the delivery destination or is it too late?",
+      "synthesized_query": "Delivery / order - Can I still change the delivery destination or is it too late? (re: I placed an order an hour ago and just noticed the)",
+      "is_answerable": true,
+      "expected_docs": [
+        "shipping_and_delivery.pdf"
+      ],
+      "expected_chunks": [
+        "e11e1dd62150604a_p2_c0"
+      ],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 38.81,
+      "retrieved_count": 3,
+      "top_doc": "shipping_and_delivery.pdf",
+      "top_chunk": "e11e1dd62150604a_p2_c0",
+      "top_score": 0.6451,
+      "retrieved_docs": [
+        "shipping_and_delivery.pdf",
+        "shipping_and_delivery.pdf",
+        "returns_and_refunds.pdf"
+      ],
+      "retrieved_chunks": [
+        "e11e1dd62150604a_p2_c0",
+        "e11e1dd62150604a_p1_c0",
+        "a2ce9b7bd3c12470_p1_c1"
+      ],
+      "doc_recall_at_k": 1.0,
+      "chunk_recall_at_k": 1.0,
+      "doc_precision_at_k": 0.3333,
+      "chunk_precision_at_k": 0.3333,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    {
+      "query_id": "eval_12",
+      "category": "ambiguous_history",
+      "message": "Where do I scan the QR code?",
+      "synthesized_query": "Account access - Where do I scan the QR code? (re: I am trying to set up two-step verification with an)",
+      "is_answerable": true,
+      "expected_docs": [
+        "account_and_password_faq.pdf"
+      ],
+      "expected_chunks": [
+        "40127cfe9c0a26e5_p2_c0"
+      ],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 35.38,
+      "retrieved_count": 3,
+      "top_doc": "account_and_password_faq.pdf",
+      "top_chunk": "40127cfe9c0a26e5_p2_c0",
+      "top_score": 0.6226,
+      "retrieved_docs": [
+        "account_and_password_faq.pdf",
+        "account_and_password_faq.pdf",
+        "account_and_password_faq.pdf"
+      ],
+      "retrieved_chunks": [
+        "40127cfe9c0a26e5_p2_c0",
+        "40127cfe9c0a26e5_p1_c0",
+        "40127cfe9c0a26e5_p1_c1"
+      ],
+      "doc_recall_at_k": 1.0,
+      "chunk_recall_at_k": 1.0,
+      "doc_precision_at_k": 0.3333,
+      "chunk_precision_at_k": 0.3333,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    {
+      "query_id": "eval_13",
+      "category": "ambiguous_history",
+      "message": "Will I have to pay for the return shipping label?",
+      "synthesized_query": "Refund / billing - Will I have to pay for the return shipping label?",
+      "is_answerable": true,
+      "expected_docs": [
+        "returns_and_refunds.pdf"
+      ],
+      "expected_chunks": [
+        "a2ce9b7bd3c12470_p1_c1"
+      ],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 36.86,
+      "retrieved_count": 3,
+      "top_doc": "returns_and_refunds.pdf",
+      "top_chunk": "a2ce9b7bd3c12470_p1_c1",
+      "top_score": 0.4842,
+      "retrieved_docs": [
+        "returns_and_refunds.pdf",
+        "returns_and_refunds.pdf",
+        "shipping_and_delivery.pdf"
+      ],
+      "retrieved_chunks": [
+        "a2ce9b7bd3c12470_p1_c1",
+        "a2ce9b7bd3c12470_p1_c0",
+        "e11e1dd62150604a_p2_c0"
+      ],
+      "doc_recall_at_k": 1.0,
+      "chunk_recall_at_k": 1.0,
+      "doc_precision_at_k": 0.3333,
+      "chunk_precision_at_k": 0.3333,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    {
+      "query_id": "eval_14",
+      "category": "ambiguous_history",
+      "message": "How many extra days will it take to arrive?",
+      "synthesized_query": "Delivery / order - How many extra days will it take to arrive? (re: I live in a remote rural area and ordered with)",
+      "is_answerable": true,
+      "expected_docs": [
+        "shipping_and_delivery.pdf"
+      ],
+      "expected_chunks": [
+        "e11e1dd62150604a_p1_c0"
+      ],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 39.35,
+      "retrieved_count": 3,
+      "top_doc": "shipping_and_delivery.pdf",
+      "top_chunk": "e11e1dd62150604a_p1_c0",
+      "top_score": 0.528,
+      "retrieved_docs": [
+        "shipping_and_delivery.pdf",
+        "shipping_and_delivery.pdf",
+        "returns_and_refunds.pdf"
+      ],
+      "retrieved_chunks": [
+        "e11e1dd62150604a_p1_c0",
+        "e11e1dd62150604a_p2_c0",
+        "a2ce9b7bd3c12470_p1_c1"
+      ],
+      "doc_recall_at_k": 1.0,
+      "chunk_recall_at_k": 1.0,
+      "doc_precision_at_k": 0.3333,
+      "chunk_precision_at_k": 0.3333,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "source_attribution_accuracy": 1.0
+    },
+    {
+      "query_id": "eval_15",
+      "category": "out_of_domain",
+      "message": "What is the boiling point of water at 3000 meters altitude?",
+      "synthesized_query": "What is the boiling point of water at 3000 meters altitude?",
+      "is_answerable": false,
+      "expected_docs": [],
+      "expected_chunks": [],
+      "execution_status": "no_match",
+      "no_match": true,
+      "error": null,
+      "latency_ms": 33.38,
+      "retrieved_count": 0,
+      "top_doc": null,
+      "top_chunk": null,
+      "top_score": 0.0,
+      "retrieved_docs": [],
+      "retrieved_chunks": [],
+      "is_correct_no_match": true
+    },
+    {
+      "query_id": "eval_16",
+      "category": "out_of_domain",
+      "message": "How do I tune the carburetor on a chainsaw engine?",
+      "synthesized_query": "How do I tune the carburetor on a chainsaw engine?",
+      "is_answerable": false,
+      "expected_docs": [],
+      "expected_chunks": [],
+      "execution_status": "no_match",
+      "no_match": true,
+      "error": null,
+      "latency_ms": 38.47,
+      "retrieved_count": 0,
+      "top_doc": null,
+      "top_chunk": null,
+      "top_score": 0.0,
+      "retrieved_docs": [],
+      "retrieved_chunks": [],
+      "is_correct_no_match": true
+    },
+    {
+      "query_id": "eval_17",
+      "category": "out_of_domain",
+      "message": "Who wrote the ancient Greek epic poems the Iliad and the Odyssey?",
+      "synthesized_query": "Who wrote the ancient Greek epic poems the Iliad and the Odyssey?",
+      "is_answerable": false,
+      "expected_docs": [],
+      "expected_chunks": [],
+      "execution_status": "no_match",
+      "no_match": true,
+      "error": null,
+      "latency_ms": 28.99,
+      "retrieved_count": 0,
+      "top_doc": null,
+      "top_chunk": null,
+      "top_score": 0.0,
+      "retrieved_docs": [],
+      "retrieved_chunks": [],
+      "is_correct_no_match": true
+    },
+    {
+      "query_id": "eval_18",
+      "category": "out_of_domain",
+      "message": "What is the current stock market price of Apple and Google shares?",
+      "synthesized_query": "What is the current stock market price of Apple and Google shares?",
+      "is_answerable": false,
+      "expected_docs": [],
+      "expected_chunks": [],
+      "execution_status": "no_match",
+      "no_match": true,
+      "error": null,
+      "latency_ms": 38.2,
+      "retrieved_count": 0,
+      "top_doc": null,
+      "top_chunk": null,
+      "top_score": 0.0,
+      "retrieved_docs": [],
+      "retrieved_chunks": [],
+      "is_correct_no_match": true
+    },
+    {
+      "query_id": "eval_19",
+      "category": "in_domain_unanswerable",
+      "message": "Do you ship internationally to Canada, Australia, or the UK?",
+      "synthesized_query": "Delivery / order - Do you ship internationally to Canada, Australia, or the UK?",
+      "is_answerable": false,
+      "expected_docs": [],
+      "expected_chunks": [],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 40.16,
+      "retrieved_count": 2,
+      "top_doc": "shipping_and_delivery.pdf",
+      "top_chunk": "e11e1dd62150604a_p1_c0",
+      "top_score": 0.337,
+      "retrieved_docs": [
+        "shipping_and_delivery.pdf",
+        "shipping_and_delivery.pdf"
+      ],
+      "retrieved_chunks": [
+        "e11e1dd62150604a_p1_c0",
+        "e11e1dd62150604a_p2_c0"
+      ],
+      "is_correct_no_match": false
+    },
+    {
+      "query_id": "eval_20",
+      "category": "in_domain_unanswerable",
+      "message": "Can I pick up my online order at a local retail store or physical locker?",
+      "synthesized_query": "Delivery / order - Can I pick up my online order at a local retail store or physical locker?",
+      "is_answerable": false,
+      "expected_docs": [],
+      "expected_chunks": [],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 43.19,
+      "retrieved_count": 3,
+      "top_doc": "account_and_password_faq.pdf",
+      "top_chunk": "40127cfe9c0a26e5_p1_c1",
+      "top_score": 0.3629,
+      "retrieved_docs": [
+        "account_and_password_faq.pdf",
+        "shipping_and_delivery.pdf",
+        "shipping_and_delivery.pdf"
+      ],
+      "retrieved_chunks": [
+        "40127cfe9c0a26e5_p1_c1",
+        "e11e1dd62150604a_p2_c0",
+        "e11e1dd62150604a_p1_c0"
+      ],
+      "is_correct_no_match": false
+    },
+    {
+      "query_id": "eval_21",
+      "category": "in_domain_unanswerable",
+      "message": "Do you offer an electronics trade-in or trade-up program for old smartphones?",
+      "synthesized_query": "Refund / billing - Do you offer an electronics trade-in or trade-up program for old smartphones?",
+      "is_answerable": false,
+      "expected_docs": [],
+      "expected_chunks": [],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 42.59,
+      "retrieved_count": 3,
+      "top_doc": "returns_and_refunds.pdf",
+      "top_chunk": "a2ce9b7bd3c12470_p1_c0",
+      "top_score": 0.476,
+      "retrieved_docs": [
+        "returns_and_refunds.pdf",
+        "returns_and_refunds.pdf",
+        "account_and_password_faq.pdf"
+      ],
+      "retrieved_chunks": [
+        "a2ce9b7bd3c12470_p1_c0",
+        "a2ce9b7bd3c12470_p1_c1",
+        "40127cfe9c0a26e5_p1_c0"
+      ],
+      "is_correct_no_match": false
+    },
+    {
+      "query_id": "eval_22",
+      "category": "in_domain_unanswerable",
+      "message": "Can I pay for my order using cryptocurrency like Bitcoin or Ethereum?",
+      "synthesized_query": "Refund / billing - Can I pay for my order using cryptocurrency like Bitcoin or Ethereum?",
+      "is_answerable": false,
+      "expected_docs": [],
+      "expected_chunks": [],
+      "execution_status": "success",
+      "no_match": false,
+      "error": null,
+      "latency_ms": 53.4,
+      "retrieved_count": 3,
+      "top_doc": "shipping_and_delivery.pdf",
+      "top_chunk": "e11e1dd62150604a_p2_c0",
+      "top_score": 0.2931,
+      "retrieved_docs": [
+        "shipping_and_delivery.pdf",
+        "returns_and_refunds.pdf",
+        "account_and_password_faq.pdf"
+      ],
+      "retrieved_chunks": [
+        "e11e1dd62150604a_p2_c0",
+        "a2ce9b7bd3c12470_p1_c0",
+        "40127cfe9c0a26e5_p1_c1"
+      ],
+      "is_correct_no_match": false
+    }
+  ]
+}

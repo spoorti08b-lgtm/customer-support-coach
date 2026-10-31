@@ -1,0 +1,6 @@
+Customer: Hello, I noticed a duplicate charge on my bank statement for my recent gadget order.
+Agent: Good morning! I would be glad to check your billing and order details right away.
+Customer: The order number is ACME-89412 and I was charged $49.99 twice.
+Agent: I see the duplicate charge in our system and have initiated an immediate refund of $49.99 to your card.
+Customer: How many business days will it take for the refund to reflect in my bank account?
+Agent: Refunds typically appear on your original payment method within 5 to 7 business days.

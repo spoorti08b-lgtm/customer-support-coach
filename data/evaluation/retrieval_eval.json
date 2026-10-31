@@ -1,0 +1,107 @@
+[
+  {
+    "id": "q1",
+    "question": "How long is the password reset link valid for?",
+    "expected_doc": "account_and_password_faq.pdf",
+    "expected_page": 1,
+    "source_sentence": "We send a reset link that stays valid for 30 minutes."
+  },
+  {
+    "id": "q2",
+    "question": "How many failed sign-in attempts will lock my account?",
+    "expected_doc": "account_and_password_faq.pdf",
+    "expected_page": 1,
+    "source_sentence": "After five failed sign-in attempts the account is locked for 15 minutes."
+  },
+  {
+    "id": "q3",
+    "question": "Where can I go to change my email address in profile settings?",
+    "expected_doc": "account_and_password_faq.pdf",
+    "expected_page": 2,
+    "source_sentence": "Go to Settings, then Profile, and choose Change email."
+  },
+  {
+    "id": "q4",
+    "question": "How do I enable two-step verification using an authenticator app?",
+    "expected_doc": "account_and_password_faq.pdf",
+    "expected_page": 2,
+    "source_sentence": "Open Settings, then Security, and turn on two-step verification."
+  },
+  {
+    "id": "q5",
+    "question": "What is the return window for unused items in original packaging?",
+    "expected_doc": "returns_and_refunds.pdf",
+    "expected_page": 1,
+    "source_sentence": "Unused items can be returned within 30 days of delivery."
+  },
+  {
+    "id": "q6",
+    "question": "How many business days do refunds take to return to the original payment method?",
+    "expected_doc": "returns_and_refunds.pdf",
+    "expected_page": 1,
+    "source_sentence": "Refunds go back to the original payment method within 5 to 7 business days after the warehouse receives the parcel."
+  },
+  {
+    "id": "q7",
+    "question": "Under what circumstances are shipping fees refunded?",
+    "expected_doc": "returns_and_refunds.pdf",
+    "expected_page": 1,
+    "source_sentence": "Shipping fees are refunded only when the item arrived damaged or was sent by mistake."
+  },
+  {
+    "id": "q8",
+    "question": "How many business days does standard shipping delivery take?",
+    "expected_doc": "shipping_and_delivery.pdf",
+    "expected_page": 1,
+    "source_sentence": "Standard delivery takes 3 to 5 business days."
+  },
+  {
+    "id": "q9",
+    "question": "How long does it take for order tracking to show its first status update?",
+    "expected_doc": "shipping_and_delivery.pdf",
+    "expected_page": 1,
+    "source_sentence": "Tracking can take up to 24 hours to show its first update."
+  },
+  {
+    "id": "q10",
+    "question": "What should a customer do if a parcel has not arrived 7 business days after dispatch?",
+    "expected_doc": "shipping_and_delivery.pdf",
+    "expected_page": 2,
+    "source_sentence": "If a parcel has not arrived 7 business days after dispatch, contact support with the order number."
+  },
+  {
+    "id": "q11",
+    "question": "Are digital codes or unsealed computer applications eligible to get money back?",
+    "expected_doc": "returns_and_refunds.pdf",
+    "expected_page": 1,
+    "source_sentence": "Software and gift cards cannot be returned once opened or redeemed."
+  },
+  {
+    "id": "q12",
+    "question": "Will buyers living in isolated countryside locations experience transit delays?",
+    "expected_doc": "shipping_and_delivery.pdf",
+    "expected_page": 1,
+    "source_sentence": "Remote areas can add up to 3 extra days."
+  },
+  {
+    "id": "q13",
+    "question": "Can I modify where my package is headed after the carrier has already picked it up?",
+    "expected_doc": "shipping_and_delivery.pdf",
+    "expected_page": 2,
+    "source_sentence": "The address can be changed only before the order is dispatched. After dispatch, ask the courier to redirect the parcel using the tracking number."
+  },
+  {
+    "id": "q14",
+    "question": "What credentials must a representative check before restoring access to a blocked user profile immediately?",
+    "expected_doc": "account_and_password_faq.pdf",
+    "expected_page": 1,
+    "source_sentence": "Waiting is usually enough; agents can also unlock it after verifying the customer's name and order number."
+  },
+  {
+    "id": "q15",
+    "question": "Do buyers need to pay postage fees to send back broken merchandise?",
+    "expected_doc": "returns_and_refunds.pdf",
+    "expected_page": 1,
+    "source_sentence": "Report damage within 7 days and attach a photo. We offer a free replacement or a full refund, and we send a prepaid return label."
+  }
+]
