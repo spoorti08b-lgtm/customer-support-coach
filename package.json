@@ -1,0 +1,29 @@
+{
+  "name": "customer-simulator-agent",
+  "version": "1.0.0",
+  "description": "Customer Simulator Agent with realistic, scenario-consistent customer messages turn-by-turn with configurable personas and dynamic emotional progression.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "cli": "node src/cli.js",
+    "benchmark": "node src/batchRunner.js",
+    "test": "node test/unit.test.js && node test/integration.test.js && node src/batchRunner.js"
+  },
+  "keywords": [
+    "customer-simulator",
+    "agent",
+    "affective-computing",
+    "llm-evaluation",
+    "synthetic-data",
+    "gemini"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@google/genai": "^2.31.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0"
+  }
+}

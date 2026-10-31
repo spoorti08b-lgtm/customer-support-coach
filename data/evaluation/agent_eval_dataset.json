@@ -1,0 +1,365 @@
+[
+  {
+    "query_id": "eval_01",
+    "category": "direct",
+    "message": "What is the return window for unused items?",
+    "intent": "Refund / billing",
+    "history": [],
+    "product": null,
+    "is_answerable": true,
+    "expected_docs": [
+      "returns_and_refunds.pdf"
+    ],
+    "expected_chunks": [
+      "a2ce9b7bd3c12470_p1_c0"
+    ],
+    "explanation": "Direct question asking about standard return window. Returns policy page 1 states unused items can be returned within 30 days of delivery."
+  },
+  {
+    "query_id": "eval_02",
+    "category": "direct",
+    "message": "How long is a password reset link valid?",
+    "intent": "Account access",
+    "history": [],
+    "product": null,
+    "is_answerable": true,
+    "expected_docs": [
+      "account_and_password_faq.pdf"
+    ],
+    "expected_chunks": [
+      "40127cfe9c0a26e5_p1_c0"
+    ],
+    "explanation": "Direct question on reset token expiry. Account FAQ page 1 states reset link stays valid for 30 minutes."
+  },
+  {
+    "query_id": "eval_03",
+    "category": "direct",
+    "message": "How many days does standard delivery take?",
+    "intent": "Delivery / order",
+    "history": [],
+    "product": null,
+    "is_answerable": true,
+    "expected_docs": [
+      "shipping_and_delivery.pdf"
+    ],
+    "expected_chunks": [
+      "e11e1dd62150604a_p1_c0"
+    ],
+    "explanation": "Direct question regarding transit duration. Shipping policy page 1 states standard delivery takes 3 to 5 business days."
+  },
+  {
+    "query_id": "eval_04",
+    "category": "direct",
+    "message": "How do I turn on two-step verification for my account?",
+    "intent": "Account access",
+    "history": [],
+    "product": null,
+    "is_answerable": true,
+    "expected_docs": [
+      "account_and_password_faq.pdf"
+    ],
+    "expected_chunks": [
+      "40127cfe9c0a26e5_p2_c0"
+    ],
+    "explanation": "Direct question about 2FA setup. Account FAQ page 2 specifies navigating to Settings > Security > turn on two-step verification."
+  },
+  {
+    "query_id": "eval_05",
+    "category": "paraphrased",
+    "message": "Can I get a refund if I already opened my software license card?",
+    "intent": "Refund / billing",
+    "history": [],
+    "product": null,
+    "is_answerable": true,
+    "expected_docs": [
+      "returns_and_refunds.pdf"
+    ],
+    "expected_chunks": [
+      "a2ce9b7bd3c12470_p1_c0"
+    ],
+    "explanation": "Paraphrased inquiry on non-returnable categories. Returns policy page 1 notes software and gift cards cannot be returned once opened or redeemed."
+  },
+  {
+    "query_id": "eval_06",
+    "category": "paraphrased",
+    "message": "My account got blocked after typing the wrong passcode several times. How long do I wait?",
+    "intent": "Account access",
+    "history": [],
+    "product": null,
+    "is_answerable": true,
+    "expected_docs": [
+      "account_and_password_faq.pdf"
+    ],
+    "expected_chunks": [
+      "40127cfe9c0a26e5_p1_c0",
+      "40127cfe9c0a26e5_p1_c1"
+    ],
+    "explanation": "Paraphrased question about lockout lockout duration. Account FAQ page 1 explains lockout lasts 15 minutes after 5 failed attempts."
+  },
+  {
+    "query_id": "eval_07",
+    "category": "paraphrased",
+    "message": "I need expedited shipping. When will my package arrive if I place the order right now at 11 am?",
+    "intent": "Delivery / order",
+    "history": [],
+    "product": null,
+    "is_answerable": true,
+    "expected_docs": [
+      "shipping_and_delivery.pdf"
+    ],
+    "expected_chunks": [
+      "e11e1dd62150604a_p1_c0"
+    ],
+    "explanation": "Paraphrased question on express delivery cut-off. Shipping policy page 1 states express takes 1 to 2 business days for orders before 2 pm."
+  },
+  {
+    "query_id": "eval_08",
+    "category": "paraphrased",
+    "message": "I want to update the email address linked to my account. Where in settings do I do that?",
+    "intent": "Account access",
+    "history": [],
+    "product": null,
+    "is_answerable": true,
+    "expected_docs": [
+      "account_and_password_faq.pdf"
+    ],
+    "expected_chunks": [
+      "40127cfe9c0a26e5_p2_c0"
+    ],
+    "explanation": "Paraphrased question regarding changing email. Account FAQ page 2 specifies Settings > Profile > Change email."
+  },
+  {
+    "query_id": "eval_09",
+    "category": "contextual_followup",
+    "message": "How long do I have to report it?",
+    "intent": "Refund / billing",
+    "history": [
+      {
+        "speaker": "customer",
+        "content": "My package arrived yesterday but the screen is cracked and damaged.",
+        "turn_number": 1
+      },
+      {
+        "speaker": "agent",
+        "content": "I am so sorry to hear your screen was broken during transit. Let me check the policy for you.",
+        "turn_number": 2
+      }
+    ],
+    "product": null,
+    "is_answerable": true,
+    "expected_docs": [
+      "returns_and_refunds.pdf"
+    ],
+    "expected_chunks": [
+      "a2ce9b7bd3c12470_p1_c1"
+    ],
+    "explanation": "Contextual follow-up with pronoun 'it'. Resolves via customer history of damaged screen to damaged item policy (report within 7 days, attach photo)."
+  },
+  {
+    "query_id": "eval_10",
+    "category": "contextual_followup",
+    "message": "What information do you need to unlock it immediately?",
+    "intent": "Account access",
+    "history": [
+      {
+        "speaker": "customer",
+        "content": "I entered the wrong password five times and my account got locked.",
+        "turn_number": 1
+      }
+    ],
+    "product": null,
+    "is_answerable": true,
+    "expected_docs": [
+      "account_and_password_faq.pdf"
+    ],
+    "expected_chunks": [
+      "40127cfe9c0a26e5_p1_c0",
+      "40127cfe9c0a26e5_p1_c1"
+    ],
+    "explanation": "Follow-up question referring to unlocking a locked profile. FAQ explains customer service agents can unlock after verifying customer name and order number."
+  },
+  {
+    "query_id": "eval_11",
+    "category": "contextual_followup",
+    "message": "Can I still change the delivery destination or is it too late?",
+    "intent": "Delivery / order",
+    "history": [
+      {
+        "speaker": "customer",
+        "content": "I placed an order an hour ago and just noticed the shipping address has an error.",
+        "turn_number": 1
+      }
+    ],
+    "product": null,
+    "is_answerable": true,
+    "expected_docs": [
+      "shipping_and_delivery.pdf"
+    ],
+    "expected_chunks": [
+      "e11e1dd62150604a_p2_c0"
+    ],
+    "explanation": "Follow-up question on destination modification. Shipping policy page 2 states destination can be changed before dispatch; after dispatch courier redirection is required."
+  },
+  {
+    "query_id": "eval_12",
+    "category": "ambiguous_history",
+    "message": "Where do I scan the QR code?",
+    "intent": "Account access",
+    "history": [
+      {
+        "speaker": "customer",
+        "content": "I am trying to set up two-step verification with an authenticator app.",
+        "turn_number": 1
+      }
+    ],
+    "product": null,
+    "is_answerable": true,
+    "expected_docs": [
+      "account_and_password_faq.pdf"
+    ],
+    "expected_chunks": [
+      "40127cfe9c0a26e5_p2_c0"
+    ],
+    "explanation": "Ambiguous question 'Where do I scan QR code' resolved by customer turn mentioning two-step verification. Handled in Settings > Security."
+  },
+  {
+    "query_id": "eval_13",
+    "category": "ambiguous_history",
+    "message": "Will I have to pay for the return shipping label?",
+    "intent": "Refund / billing",
+    "history": [
+      {
+        "speaker": "customer",
+        "content": "The gadget I received is defective and does not turn on.",
+        "turn_number": 1
+      }
+    ],
+    "product": null,
+    "is_answerable": true,
+    "expected_docs": [
+      "returns_and_refunds.pdf"
+    ],
+    "expected_chunks": [
+      "a2ce9b7bd3c12470_p1_c1"
+    ],
+    "explanation": "Ambiguous label cost question resolved by defective product context: company sends a prepaid return label for faulty merchandise."
+  },
+  {
+    "query_id": "eval_14",
+    "category": "ambiguous_history",
+    "message": "How many extra days will it take to arrive?",
+    "intent": "Delivery / order",
+    "history": [
+      {
+        "speaker": "customer",
+        "content": "I live in a remote rural area and ordered with standard delivery.",
+        "turn_number": 1
+      }
+    ],
+    "product": null,
+    "is_answerable": true,
+    "expected_docs": [
+      "shipping_and_delivery.pdf"
+    ],
+    "expected_chunks": [
+      "e11e1dd62150604a_p1_c0"
+    ],
+    "explanation": "Ambiguous question resolved by rural area context. Shipping policy states remote areas can add up to 3 extra days."
+  },
+  {
+    "query_id": "eval_15",
+    "category": "out_of_domain",
+    "message": "What is the boiling point of water at 3000 meters altitude?",
+    "intent": null,
+    "history": [],
+    "product": null,
+    "is_answerable": false,
+    "expected_docs": [],
+    "expected_chunks": [],
+    "explanation": "Scientific question completely outside customer support domain. Agent must return NO_MATCH with no passages."
+  },
+  {
+    "query_id": "eval_16",
+    "category": "out_of_domain",
+    "message": "How do I tune the carburetor on a chainsaw engine?",
+    "intent": null,
+    "history": [],
+    "product": null,
+    "is_answerable": false,
+    "expected_docs": [],
+    "expected_chunks": [],
+    "explanation": "Mechanical repair inquiry unrelated to Acme Gadgets e-commerce policies. Must yield NO_MATCH."
+  },
+  {
+    "query_id": "eval_17",
+    "category": "out_of_domain",
+    "message": "Who wrote the ancient Greek epic poems the Iliad and the Odyssey?",
+    "intent": null,
+    "history": [],
+    "product": null,
+    "is_answerable": false,
+    "expected_docs": [],
+    "expected_chunks": [],
+    "explanation": "Classical literature query with zero relevance to customer support. Must return NO_MATCH."
+  },
+  {
+    "query_id": "eval_18",
+    "category": "out_of_domain",
+    "message": "What is the current stock market price of Apple and Google shares?",
+    "intent": null,
+    "history": [],
+    "product": null,
+    "is_answerable": false,
+    "expected_docs": [],
+    "expected_chunks": [],
+    "explanation": "Financial market query with no supporting knowledge in store documents. Must return NO_MATCH."
+  },
+  {
+    "query_id": "eval_19",
+    "category": "in_domain_unanswerable",
+    "message": "Do you ship internationally to Canada, Australia, or the UK?",
+    "intent": "Delivery / order",
+    "history": [],
+    "product": null,
+    "is_answerable": false,
+    "expected_docs": [],
+    "expected_chunks": [],
+    "explanation": "In-domain delivery question, but the sample knowledge base only defines domestic standard/express delivery; international shipping policy is genuinely absent."
+  },
+  {
+    "query_id": "eval_20",
+    "category": "in_domain_unanswerable",
+    "message": "Can I pick up my online order at a local retail store or physical locker?",
+    "intent": "Delivery / order",
+    "history": [],
+    "product": null,
+    "is_answerable": false,
+    "expected_docs": [],
+    "expected_chunks": [],
+    "explanation": "In-domain fulfillment question, but the indexed PDF contains no information about physical lockers or in-store pickup."
+  },
+  {
+    "query_id": "eval_21",
+    "category": "in_domain_unanswerable",
+    "message": "Do you offer an electronics trade-in or trade-up program for old smartphones?",
+    "intent": "Refund / billing",
+    "history": [],
+    "product": null,
+    "is_answerable": false,
+    "expected_docs": [],
+    "expected_chunks": [],
+    "explanation": "In-domain returns/hardware query, but the returns policy covers returns of unused items; no trade-in program exists in the text."
+  },
+  {
+    "query_id": "eval_22",
+    "category": "in_domain_unanswerable",
+    "message": "Can I pay for my order using cryptocurrency like Bitcoin or Ethereum?",
+    "intent": "Refund / billing",
+    "history": [],
+    "product": null,
+    "is_answerable": false,
+    "expected_docs": [],
+    "expected_chunks": [],
+    "explanation": "In-domain payment query, but the policy only specifies refunds to original payment methods and mentions no cryptocurrency acceptance."
+  }
+]
