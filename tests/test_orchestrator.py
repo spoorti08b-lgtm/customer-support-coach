@@ -19,7 +19,10 @@ sys.path.insert(0, str(PROJECT_ROOT / "src"))
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from orchestrator.mock_components import MockAgent, MockSessionManager
-from orchestrator.orchestrator import run_workflow
+from orchestrator.orchestrator import (
+    run_workflow,
+    run_multi_agent_workflow,
+)
 from orchestrator.schemas import WorkflowRequest, WorkflowResponse
 
 
@@ -182,3 +185,119 @@ def test_unexpected_error_is_handled_safely(session_manager):
     assert isinstance(response.error, str)
     assert "Traceback" not in response.error
     assert "Exception" not in response.error
+
+# ---------------------------------------------------------------------------
+# Milestone 2: Multi-agent workflow tests
+# ---------------------------------------------------------------------------
+
+class MockSentimentAgent:
+    def analyze(self, session, message, **kwargs):
+        return {
+            "intent": "order_status",
+            "sentiment": "frustrated",
+            "analyzed_message": message,
+        }
+
+
+class MockKnowledgeAgent:
+    def recommend(self, session, message, intent_sentiment, **kwargs):
+        return {
+            "recommendation": "Check shipment tracking.",
+            "used_intent": intent_sentiment["intent"],
+        }
+
+
+class MockSimulatorAgent:
+    def generate_message(self, session, message, **kwargs):
+        return {
+            "message": "My shipment is delayed. Where is my order?"
+        }
+
+
+class BrokenSentimentAgent:
+    def analyze(self, session, message, **kwargs):
+        raise RuntimeError("Simulated sentiment failure")
+
+
+def test_multi_agent_manual_mode_success(session_manager):
+    request = WorkflowRequest(
+        session_id="sess-demo01",
+        message="Where is my order?",
+    )
+
+    response = run_multi_agent_workflow(
+        request=request,
+        session_manager=session_manager,
+        sentiment_agent=MockSentimentAgent(),
+        knowledge_agent=MockKnowledgeAgent(),
+    )
+
+    assert response.status == "completed"
+    assert response.error is None
+    assert response.result["customer_message"] == "Where is my order?"
+    assert response.result["intent_sentiment"]["intent"] == "order_status"
+    assert response.result["knowledge_recommendation"]["used_intent"] == "order_status"
+    assert response.result["simulator"]["used"] is False
+
+
+def test_multi_agent_simulator_mode_success(session_manager):
+    # MockSessionManager creates sess-demo01 and sess-demo02.
+    # Find a session configured for Simulator mode.
+    simulator_session = None
+
+    for session_id in ("sess-demo01", "sess-sim01"):
+        session = session_manager.get_session(session_id)
+
+        if session is not None and str(
+            getattr(session.mode, "value", session.mode)
+        ).strip().lower() == "simulator":
+            simulator_session = session
+            break
+
+    if simulator_session is None:
+        pytest.skip(
+            "MockSessionManager has no Simulator-mode session configured."
+        )
+
+    request = WorkflowRequest(
+        session_id=simulator_session.session_id,
+        message="Generate a customer message",
+    )
+
+    response = run_multi_agent_workflow(
+        request=request,
+        session_manager=session_manager,
+        simulator_agent=MockSimulatorAgent(),
+        sentiment_agent=MockSentimentAgent(),
+        knowledge_agent=MockKnowledgeAgent(),
+    )
+
+    assert response.status == "completed"
+    assert response.error is None
+    assert response.result["simulator"]["used"] is True
+    assert response.result["customer_message"] == (
+        "My shipment is delayed. Where is my order?"
+    )
+    assert response.result["intent_sentiment"]["analyzed_message"] == (
+        "My shipment is delayed. Where is my order?"
+    )
+
+
+def test_multi_agent_sentiment_failure_is_handled(session_manager):
+    request = WorkflowRequest(
+        session_id="sess-demo01",
+        message="I need help with my order.",
+    )
+
+    response = run_multi_agent_workflow(
+        request=request,
+        session_manager=session_manager,
+        sentiment_agent=BrokenSentimentAgent(),
+        knowledge_agent=MockKnowledgeAgent(),
+    )
+
+    assert response.status == "failed"
+    assert response.result is None
+    assert response.error == (
+        "Intent and sentiment analysis failed. Please try again."
+    )
