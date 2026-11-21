@@ -18,6 +18,16 @@ from __future__ import annotations
 
 from typing import Any
 
+from backend.agents.agent_handoff import (
+    AgentHandoff,
+    CoachingHandoff,
+    EscalationHandoff,
+    KnowledgeHandoff,
+)
+from backend.agents.conversation_context import (
+    ConversationContext,
+    SentimentTrajectoryPoint,
+)
 from backend.agents.intent_sentiment_agent import (
     IntentSentimentAgent,
     IntentSentimentResult,
@@ -25,9 +35,15 @@ from backend.agents.intent_sentiment_agent import (
 )
 
 __all__ = [
+    "AgentHandoff",
+    "CoachingHandoff",
+    "ConversationContext",
+    "EscalationHandoff",
     "IntentSentimentAgent",
     "IntentSentimentResult",
+    "KnowledgeHandoff",
     "KnowledgeRecommendationAgent",
+    "SentimentTrajectoryPoint",
     "analyze_message",
 ]
 

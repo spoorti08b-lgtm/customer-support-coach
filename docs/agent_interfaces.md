@@ -33,6 +33,14 @@ Sentiment Analysis, and Knowledge Recommendation agents.
 - `intent`: optional intent label
 - `intent_confidence`: optional value from 0.0 to 1.0
 
+The agent's concrete output `IntentSentimentResult` extends `SentimentResult`
+additively with `emotion`, `frustration_score`, `frustration_level`,
+`escalation_risk_score`, `requires_human_review`, `explanation`,
+`sentiment_trend`, `sentiment_trajectory`, `conversation_context`,
+`turn_number`, and `handoff` (typed payloads for the Knowledge, Escalation
+and Coaching agents). See `docs/intent_emotion_context.md` for the full
+contract, banding rules, and routing priorities.
+
 ## Knowledge Recommendation Agent
 
 **Input:** existing `KnowledgeRecommendationRequest` from

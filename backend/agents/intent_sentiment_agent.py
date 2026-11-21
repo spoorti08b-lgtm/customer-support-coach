@@ -6,11 +6,15 @@ history) and returns a structured result covering:
 * intent classification with a heuristic confidence,
 * sentiment (positive / neutral / negative / mixed),
 * emotion indicators (a message may show several),
-* a frustration score in [0, 1],
+* a frustration score in [0, 1] and its banded frustration level,
 * an escalation-risk score in [0, 1] with a short explanation,
-* a human-review flag, and
+* a human-review flag,
 * a sentiment trend derived from prior customer turns when enough
-  history exists (``"unknown"`` otherwise).
+  history exists (``"unknown"`` otherwise),
+* a per-turn sentiment trajectory and a ``ConversationContext`` summary of
+  the prior customer messages used, and
+* typed ``AgentHandoff`` payloads for the Knowledge, Escalation and
+  Coaching agents.
 
 Public interface::
 
@@ -34,10 +38,19 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Any, Final, Literal
+from collections import Counter
+from typing import Any, Final
 
 from pydantic import ConfigDict, Field, ValidationError
 
+from backend.agents.agent_handoff import AgentHandoff, build_handoff
+from backend.agents.conversation_context import (
+    ConversationContext,
+    EmotionLabel,
+    FrustrationLevel,
+    SentimentTrajectoryPoint,
+    SentimentTrend,
+)
 from backend.agents.intent_sentiment_config import (
     DEFAULT_FALLBACK_INTENT,
     DEFAULT_INTENT_KEYWORDS,
@@ -66,18 +79,6 @@ from backend.orchestrator.knowledge_schemas import ConversationHistoryItem
 logger = logging.getLogger(__name__)
 
 AGENT_TYPE: Final[str] = "intent-sentiment-analysis-agent"
-
-EmotionLabel = Literal[
-    "frustration",
-    "anger",
-    "confusion",
-    "disappointment",
-    "satisfaction",
-    "urgency",
-    "neutral",
-]
-
-SentimentTrend = Literal["improving", "stable", "worsening", "unknown"]
 
 _SAFE_ID_PATTERN = re.compile(r"[A-Za-z0-9_.:-]{1,128}")
 _TOKEN_PATTERN = re.compile(r"[a-z0-9']+")
@@ -126,6 +127,33 @@ class IntentSentimentResult(SentimentResult):
         description=(
             "Direction of sentiment across prior customer turns, or "
             "'unknown' when history is insufficient."
+        ),
+    )
+    turn_number: int = Field(
+        default=1,
+        ge=1,
+        description="1-indexed turn this analysis belongs to.",
+    )
+    frustration_level: FrustrationLevel = Field(
+        default="none",
+        description="Banded frustration level derived from frustration_score.",
+    )
+    sentiment_trajectory: list[SentimentTrajectoryPoint] = Field(
+        default_factory=list,
+        description=(
+            "Per-turn sentiment points for the analysed window, oldest first; "
+            "the final point is the current message."
+        ),
+    )
+    conversation_context: ConversationContext = Field(
+        default_factory=ConversationContext,
+        description="Summary of the prior customer turns used for this analysis.",
+    )
+    handoff: AgentHandoff | None = Field(
+        default=None,
+        description=(
+            "Structured payloads for the Knowledge, Escalation and Coaching "
+            "agents. Populated by analyze(); None only for hand-built results."
         ),
     )
 
@@ -656,6 +684,108 @@ class IntentSentimentAgent:
             return "worsening"
         return "stable"
 
+    # -- frustration level, trajectory, context ----------------------------
+
+    def _frustration_level(self, score: float) -> FrustrationLevel:
+        """Band a frustration score using the configured thresholds.
+
+        Levels are derived from the score, never scored separately, so the
+        label and the number can never disagree.
+        """
+        cfg = self.config
+        if score >= cfg.frustration_level_severe:
+            return "severe"
+        if score >= cfg.frustration_level_high:
+            return "high"
+        if score >= cfg.frustration_level_moderate:
+            return "moderate"
+        if score >= cfg.frustration_level_low:
+            return "low"
+        return "none"
+
+    def _trajectory_point(
+        self, text: str, turn_number: int | None
+    ) -> SentimentTrajectoryPoint:
+        """Score one customer turn for the sentiment trajectory."""
+        positive, negative = self._polarity_evidence(text)
+        sentiment, _confidence, polarity = self._classify_sentiment(
+            positive, negative
+        )
+        return SentimentTrajectoryPoint(
+            turn_number=turn_number,
+            sentiment=sentiment,
+            polarity=round(polarity, 4),
+            emotions=self._detect_emotions(text),
+            frustration_score=self._frustration_score(
+                text, positive, negative, repeat_signal=0.0
+            ),
+        )
+
+    @staticmethod
+    def _build_context(
+        prior_points: list[SentimentTrajectoryPoint],
+        prior_intents: list[str],
+        current_intent: str,
+    ) -> ConversationContext:
+        """Summarise the prior customer turns used for this message."""
+        if not prior_points:
+            return ConversationContext()
+
+        unresolved = sum(1 for label in prior_intents if label == current_intent)
+        emotion_counts: Counter[str] = Counter()
+        for point in prior_points:
+            emotion_counts.update(point.emotions)
+
+        turn_numbers = [
+            point.turn_number for point in prior_points if point.turn_number
+        ]
+        dominant = (
+            Counter(prior_intents).most_common(1)[0][0] if prior_intents else None
+        )
+        return ConversationContext(
+            has_context=True,
+            customer_turns=len(prior_points),
+            window_start_turn=min(turn_numbers) if turn_numbers else None,
+            window_end_turn=max(turn_numbers) if turn_numbers else None,
+            prior_intents=prior_intents,
+            dominant_intent=dominant,
+            unresolved_turns=unresolved,
+            recurring_issue=unresolved > 0,
+            average_prior_frustration=round(
+                sum(point.frustration_score for point in prior_points)
+                / len(prior_points),
+                4,
+            ),
+            prior_emotion_counts=dict(emotion_counts),
+        )
+
+    @staticmethod
+    def _risk_signals(
+        trigger_score: float,
+        repeat_signal: float,
+        frustration_level: FrustrationLevel,
+        sentiment: str,
+        trend: str,
+        urgency_evidence: int,
+    ) -> list[str]:
+        """Machine-readable risk signals used by the Escalation Agent."""
+        signals: list[str] = []
+        if trigger_score >= 0.9:
+            signals.append("legal_or_public_threat")
+        elif trigger_score > 0.0:
+            signals.append("explicit_escalation_request")
+        if repeat_signal > 0.0:
+            signals.append("repeated_contact")
+        if frustration_level in {"high", "severe"}:
+            signals.append("high_frustration")
+        if sentiment == "negative":
+            signals.append("negative_sentiment")
+        if trend == "worsening":
+            signals.append("worsening_trend")
+        if urgency_evidence > 0:
+            signals.append("time_pressure")
+        return signals
+
     # -- explanation -------------------------------------------------------
 
     def _build_explanation(
@@ -752,10 +882,16 @@ class IntentSentimentAgent:
         emotions = self._detect_emotions(text)
 
         customer_priors = [
-            item.content for item in history if item.speaker == "customer"
+            item for item in history if item.speaker == "customer"
         ][-cfg.history_window :]
-        prior_texts = [content[: cfg.max_analysis_chars] for content in customer_priors]
+        prior_texts = [
+            item.content[: cfg.max_analysis_chars] for item in customer_priors
+        ]
         prior_intents = [self._classify_intent(text)[0] for text in prior_texts]
+        prior_points = [
+            self._trajectory_point(prior_text, item.turn_number)
+            for prior_text, item in zip(prior_texts, customer_priors)
+        ]
 
         repeat_signal = self._repeat_signal(text, prior_intents, intent)
         frustration = self._frustration_score(text, positive, negative, repeat_signal)
@@ -768,13 +904,9 @@ class IntentSentimentAgent:
         )
         requires_review = risk >= cfg.human_review_risk_threshold
 
-        prior_polarities = []
-        for prior_text in prior_texts:
-            pos, neg = self._polarity_evidence(prior_text)
-            prior_polarities.append(
-                (pos - neg) / (pos + neg) if (pos + neg) > 0 else 0.0
-            )
-        trend = self._sentiment_trend(prior_polarities, polarity)
+        trend = self._sentiment_trend(
+            [point.polarity for point in prior_points], polarity
+        )
 
         explanation = self._build_explanation(
             sentiment=sentiment,
@@ -786,10 +918,38 @@ class IntentSentimentAgent:
             requires_review=requires_review,
         )
 
+        current_point = self._trajectory_point(text, customer.turn_number)
+        trajectory = [*prior_points, current_point][-cfg.max_trajectory_points :]
+        context = self._build_context(prior_points, prior_intents, intent)
+        level = self._frustration_level(frustration)
+        handoff = build_handoff(
+            intent=intent,
+            intent_confidence=intent_confidence,
+            sentiment=sentiment,
+            emotions=emotions,
+            turn_number=customer.turn_number,
+            sentiment_trend=trend,
+            frustration_level=level,
+            escalation_risk_score=risk,
+            requires_human_review=requires_review,
+            recurring_issue=context.recurring_issue,
+            customer_turns_of_context=context.customer_turns,
+            signals=self._risk_signals(
+                trigger_score=trigger_score,
+                repeat_signal=repeat_signal,
+                frustration_level=level,
+                sentiment=sentiment,
+                trend=trend,
+                urgency_evidence=urgency_evidence,
+            ),
+            critical_threshold=cfg.critical_risk_threshold,
+        )
+
         logger.debug(
-            "Analysis complete | intent=%s | sentiment=%s | review=%s | message_length=%d",
+            "Analysis complete | intent=%s | sentiment=%s | level=%s | review=%s | message_length=%d",
             intent,
             sentiment,
+            level,
             requires_review,
             len(customer.content),
         )
@@ -805,6 +965,11 @@ class IntentSentimentAgent:
             requires_human_review=requires_review,
             explanation=explanation,
             sentiment_trend=trend,
+            turn_number=customer.turn_number,
+            frustration_level=level,
+            sentiment_trajectory=trajectory,
+            conversation_context=context,
+            handoff=handoff,
         )
 
     # -- orchestrator entry point -----------------------------------------

@@ -266,6 +266,12 @@ EMOTION_INDICATORS: Final[dict[str, tuple[str, ...]]] = {
         "resolved", "fixed", "happy", "glad", "pleased", "works now",
         "all good", "much appreciated", "grateful", "satisfied",
     ),
+    "happiness": (
+        "happy", "delighted", "thrilled", "excited", "love it",
+        "love this", "wonderful", "fantastic", "awesome", "amazing",
+        "perfect", "brilliant", "yay", "so glad", "great news",
+        "exceeded my expectations", "made my day",
+    ),
     "urgency": (
         "urgent", "urgently", "immediately", "asap", "right away",
         "today", "deadline", "emergency", "quickly", "hurry",
@@ -396,6 +402,21 @@ class ScoringConfig:
     trend_epsilon: float = 0.15
     history_window: int = 10
 
+    # Frustration bands.  A score at or above each threshold is reported as
+    # that level, so the labels are derived from one score and never disagree
+    # with it.  Thresholds must be strictly increasing.
+    frustration_level_low: float = 0.20
+    frustration_level_moderate: float = 0.40
+    frustration_level_high: float = 0.60
+    frustration_level_severe: float = 0.80
+
+    # At or above this risk score, the hand-off to the Escalation Agent is
+    # marked p1_critical rather than p2_high.
+    critical_risk_threshold: float = 0.80
+
+    # Sentiment trajectory keeps at most this many recent customer turns.
+    max_trajectory_points: int = 12
+
     # Long inputs are truncated to max_analysis_chars before scoring.
     max_analysis_chars: int = 4000
 
@@ -410,11 +431,33 @@ class ScoringConfig:
             "mixed_sentiment_ratio": self.mixed_sentiment_ratio,
             "human_review_risk_threshold": self.human_review_risk_threshold,
             "trend_epsilon": self.trend_epsilon,
+            "frustration_level_low": self.frustration_level_low,
+            "frustration_level_moderate": self.frustration_level_moderate,
+            "frustration_level_high": self.frustration_level_high,
+            "frustration_level_severe": self.frustration_level_severe,
+            "critical_risk_threshold": self.critical_risk_threshold,
         }
         for name, value in unit_intervals.items():
             if not 0.0 <= value <= 1.0:
                 raise ValueError(f"{name} must be between 0.0 and 1.0; got {value!r}.")
 
+        levels = (
+            self.frustration_level_low,
+            self.frustration_level_moderate,
+            self.frustration_level_high,
+            self.frustration_level_severe,
+        )
+        if any(later <= earlier for earlier, later in zip(levels, levels[1:])):
+            raise ValueError(
+                "frustration_level_* thresholds must be strictly increasing; "
+                f"got {levels!r}."
+            )
+
+        if self.max_trajectory_points < 1:
+            raise ValueError(
+                "max_trajectory_points must be at least 1; "
+                f"got {self.max_trajectory_points!r}."
+            )
         if self.max_analysis_chars < 1:
             raise ValueError(
                 f"max_analysis_chars must be a positive integer; got {self.max_analysis_chars!r}."

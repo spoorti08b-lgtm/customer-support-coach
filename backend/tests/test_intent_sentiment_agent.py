@@ -35,6 +35,7 @@ EMOTION_LABELS = {
     "confusion",
     "disappointment",
     "satisfaction",
+    "happiness",
     "urgency",
     "neutral",
 }
@@ -127,6 +128,11 @@ def test_output_schema_matches_documented_contract():
         "requires_human_review",
         "explanation",
         "sentiment_trend",
+        "turn_number",
+        "frustration_level",
+        "sentiment_trajectory",
+        "conversation_context",
+        "handoff",
     }
     assert set(result.model_dump()) == expected_fields
 
