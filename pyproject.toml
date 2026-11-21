@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "customer-support-coach"
+version = "0.1.0"
+description = "AI Customer Support Coaching Assistant"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "streamlit>=1.46",
+    "pypdf",
+    "chromadb",
+    "sentence-transformers",
+    "pydantic>=2.0",
+    "pandas",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
