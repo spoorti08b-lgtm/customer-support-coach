@@ -16,6 +16,11 @@ DEFAULTS = {
     "analyses": [],
     "tone": [],
     "replay_idx": 0,
+    # Replay Mode (Milestone 3): position status and per-message caches so a
+    # restored session replays without re-running the agents.
+    "replay_status": "idle",
+    "replay_analyses": {},
+    "replay_tones": {},
 }
 
 

@@ -1,0 +1,7 @@
+Customer: Hi, I'm not sure what is happening with my account. I can't log in.
+Agent: Hello! I'm sorry you're stuck. Let's get you back in. Are you seeing an error message?
+Customer: It says my password is locked and I don't understand what to do next.
+Agent: Thanks for explaining. I'll send a secure reset link to your registered email now.
+Customer: Okay, I found the email and reset it. It worked, thank you so much!
+Agent: Wonderful! I'm glad you're back in. Is there anything else I can help with?
+Customer: No, that's all. Thanks again for explaining it step by step.

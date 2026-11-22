@@ -1,0 +1,30 @@
+{
+  "conversation_id": "replay_001",
+  "channel": "chat",
+  "messages": [
+    {
+      "speaker": "customer",
+      "message": "My order ACM-4521 has not arrived and it was due three days ago."
+    },
+    {
+      "speaker": "agent",
+      "message": "Hello! I'm sorry your order is late. Let me check the tracking details for you."
+    },
+    {
+      "speaker": "customer",
+      "message": "I have already contacted support twice about this. It's ridiculous that nobody has helped."
+    },
+    {
+      "speaker": "agent",
+      "message": "I understand your frustration, and I apologise for the repeated contacts. The parcel is delayed at the local depot."
+    },
+    {
+      "speaker": "customer",
+      "message": "I want a full refund today or I will cancel my account and file a complaint."
+    },
+    {
+      "speaker": "agent",
+      "message": "I'm escalating this to a senior specialist now and will email you a refund confirmation within 24 hours."
+    }
+  ]
+}
