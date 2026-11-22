@@ -1,0 +1,6 @@
+speaker,message
+customer,"My card was charged twice for order ACME-89412 and I need one charge reversed."
+agent,"Good morning! I can see the duplicate charge. I have started a refund for the second charge."
+customer,"How long will the refund take? I have been waiting since Monday."
+agent,"Refunds usually appear within 5 to 7 business days, and I will send you a reference number today."
+customer,"Okay, thank you. Please make sure it actually happens this time."

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Simulator Agent (CSA) - Affective Dialogue Studio</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- TOP HEADER -->
+    <header class="top-nav">
+      <div class="brand">
+        <div class="logo-icon">🤖</div>
+        <div class="brand-text">
+          <h1>Customer Simulator Agent</h1>
+          <span class="subtitle">Affective State & Persona Progression Engine</span>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="provider-pill" id="providerPill">
+          <span class="indicator live"></span>
+          <span id="providerLabel">Engine: Local Heuristic</span>
+        </div>
+
+        <button class="btn btn-secondary btn-sm" id="btnSettings">⚙️ Settings</button>
+        <button class="btn btn-secondary btn-sm" id="btnExport">📥 Export</button>
+        <button class="btn btn-primary btn-sm" id="btnNewSession">🔄 New Session</button>
+      </div>
+    </header>
+
+    <!-- MAIN 3-PANE WORKSPACE -->
+    <main class="workspace">
+      <!-- LEFT PANE: PERSONA & SCENARIO CONFIG -->
+      <aside class="sidebar-pane left-pane">
+        <div class="pane-header">
+          <h2>Configuration Studio</h2>
+          <span class="badge" id="sessionStatusBadge">Active</span>
+        </div>
+
+        <div class="config-sections">
+          <!-- Persona Selector -->
+          <div class="config-card">
+            <div class="section-title">
+              <span>👤 Customer Persona</span>
+              <button class="btn-link" id="btnEditPersona">Customize</button>
+            </div>
+            <select id="personaSelect" class="form-select"></select>
+
+            <div class="persona-preview" id="personaPreview">
+              <div class="persona-avatar" id="pAvatar">⚡</div>
+              <div class="persona-info">
+                <div class="persona-name" id="pName">Evelyn Reed</div>
+                <div class="persona-role" id="pRole">Startup Founder</div>
+              </div>
+            </div>
+
+            <!-- Traits Grid -->
+            <div class="traits-container">
+              <div class="trait-row">
+                <span class="trait-label">Patience:</span>
+                <div class="trait-track"><div class="trait-fill" id="traitPatience" style="width: 30%"></div></div>
+                <span class="trait-val" id="valPatience">3/10</span>
+              </div>
+              <div class="trait-row">
+                <span class="trait-label">Sensitivity:</span>
+                <div class="trait-track"><div class="trait-fill" id="traitSensitivity" style="width: 70%"></div></div>
+                <span class="trait-val" id="valSensitivity">7/10</span>
+              </div>
+              <div class="trait-row">
+                <span class="trait-label">Skepticism:</span>
+                <div class="trait-track"><div class="trait-fill" id="traitSkepticism" style="width: 80%"></div></div>
+                <span class="trait-val" id="valSkepticism">8/10</span>
+              </div>
+              <div class="trait-row">
+                <span class="trait-label">Tech Savvy:</span>
+                <div class="trait-track"><div class="trait-fill" id="traitTech" style="width: 90%"></div></div>
+                <span class="trait-val" id="valTech">9/10</span>
+              </div>
+            </div>
+            <p class="persona-desc" id="pDesc">Loading persona details...</p>
+          </div>
+
+          <!-- Scenario Selector -->
+          <div class="config-card">
+            <div class="section-title">
+              <span>📋 Support Scenario</span>
+            </div>
+            <select id="scenarioSelect" class="form-select"></select>
+
+            <div class="scenario-details">
+              <div class="scenario-meta">
+                <span class="tag domain-tag" id="sDomain">E-Commerce</span>
+                <span class="tag diff-tag" id="sDifficulty">Medium</span>
+              </div>
+              <p class="scenario-desc" id="sDesc">Loading scenario...</p>
+              <div class="goal-box">
+                <strong>🎯 Customer's Goal:</strong>
+                <p id="sGoal">Full refund or overnight replacement</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ground Truth / Knowledge Disclosure -->
+          <div class="config-card">
+            <div class="section-title">
+              <span>🔍 Information Disclosure</span>
+            </div>
+            <p class="text-xs text-muted">What the customer has disclosed vs withheld:</p>
+            <ul class="disclosure-list" id="disclosureList">
+              <li class="disclosed">Order ID: #ORD-98214 (Disclosed)</li>
+              <li class="withheld">Photo Evidence (Withheld)</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CENTER PANE: CHAT CONVERSATION -->
+      <section class="chat-pane">
+        <div class="chat-header">
+          <div class="chat-agent-info">
+            <span class="chat-icon">🎧</span>
+            <div>
+              <h3>Support Agent Channel</h3>
+              <p class="chat-sub" id="chatSub">Turn #1 | Simulated Customer Ready</p>
+            </div>
+          </div>
+          <button class="btn btn-outline btn-sm" id="btnEvaluate">📊 View Scorecard</button>
+        </div>
+
+        <div class="messages-container" id="messagesContainer">
+          <!-- Messages will be rendered dynamically -->
+        </div>
+
+        <!-- Quick Response Suggestions -->
+        <div class="quick-chips-bar">
+          <span class="chips-label">Quick Prompts:</span>
+          <button class="chip" data-prompt="I am so sorry to hear about this! Let me pull up your order and fix it immediately.">🤝 Empathize & Help</button>
+          <button class="chip" data-prompt="Could you please provide your order number and email address?">📝 Ask for Details</button>
+          <button class="chip" data-prompt="I have processed a full refund to your card. No need to return the item.">💰 Grant Full Refund</button>
+          <button class="chip" data-prompt="Per our company policy, all sales are final once delivered.">🛑 Cite Policy (Trigger)</button>
+        </div>
+
+        <!-- Input Area -->
+        <div class="chat-input-area">
+          <textarea id="agentInput" placeholder="Type your response to the customer... (Press Enter to send, Shift+Enter for new line)" rows="2"></textarea>
+          <button id="btnSend" class="btn btn-primary btn-send">
+            <span>Send Reply</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- RIGHT PANE: AFFECTIVE METRICS & TRAJECTORY GRAPH -->
+      <aside class="sidebar-pane right-pane">
+        <div class="pane-header">
+          <h2>Affective Dynamics</h2>
+          <span class="turn-count" id="turnDisplay">Turn 1</span>
+        </div>
+
+        <div class="affective-content">
+          <!-- Primary Emotion Card -->
+          <div class="emotion-badge-card" id="emotionBadgeCard">
+            <span class="emotion-emoji" id="currentEmotionEmoji">😠</span>
+            <div class="emotion-meta">
+              <span class="emotion-sub">Primary Affect</span>
+              <h3 class="emotion-name" id="currentEmotionName">IMPATIENT</h3>
+            </div>
+            <span class="urgency-pill" id="urgencyPill">Urgency: 70%</span>
+          </div>
+
+          <!-- Gauges Grid -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-head">
+                <span class="metric-title">Frustration</span>
+                <span class="metric-val" id="metricFrustration">45%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill frustration-fill" id="fillFrustration" style="width: 45%"></div>
+              </div>
+              <span class="delta-tag" id="deltaFrustration">--</span>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-head">
+                <span class="metric-title">Trust</span>
+                <span class="metric-val" id="metricTrust">30%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill trust-fill" id="fillTrust" style="width: 30%"></div>
+              </div>
+              <span class="delta-tag" id="deltaTrust">--</span>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-head">
+                <span class="metric-title">Satisfaction</span>
+                <span class="metric-val" id="metricSatisfaction">15%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill satisfaction-fill" id="fillSatisfaction" style="width: 15%"></div>
+              </div>
+              <span class="delta-tag" id="deltaSatisfaction">--</span>
+            </div>
+          </div>
+
+          <!-- Emotional Progression Trajectory Graph -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <span class="chart-title">📈 Emotional Trajectory</span>
+              <div class="chart-legend">
+                <span class="legend-item"><span class="legend-dot red"></span> Frustration</span>
+                <span class="legend-item"><span class="legend-dot green"></span> Trust</span>
+                <span class="legend-item"><span class="legend-dot blue"></span> Satisfaction</span>
+              </div>
+            </div>
+            <div class="svg-chart-container">
+              <svg id="trajectoryChart" viewBox="0 0 340 160"></svg>
+            </div>
+          </div>
+
+          <!-- Behavioral Triggers Detected -->
+          <div class="triggers-card">
+            <div class="section-title">
+              <span>⚡ Behavioral Triggers (Last Turn)</span>
+            </div>
+            <div class="tags-cloud" id="triggersCloud">
+              <span class="tag-trigger neutral">Session start</span>
+            </div>
+          </div>
+
+          <!-- Inner Monologue Spotlight -->
+          <div class="monologue-card">
+            <div class="section-title">
+              <span>💭 Customer's Mindset</span>
+            </div>
+            <p class="monologue-text" id="latestMonologue">
+              "Starting this support request. I need this fixed immediately."
+            </p>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- EVALUATION MODAL -->
+  <div class="modal-backdrop" id="evalModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2>📊 Simulation Evaluation Scorecard</h2>
+        <button class="modal-close" id="btnCloseEval">&times;</button>
+      </div>
+      <div class="modal-body" id="evalModalBody">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnExportEval">Download JSON</button>
+        <button class="btn btn-primary" id="btnDoneEval">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2>⚙️ Engine & API Settings</h2>
+        <button class="modal-close" id="btnCloseSettings">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Simulation Provider:</label>
+          <select id="settingProvider" class="form-select">
+            <option value="local">Local Heuristic Engine (Offline / Zero Setup)</option>
+            <option value="gemini">Google Gemini 2.5 Flash</option>
+            <option value="openai">OpenAI / Compatible Endpoint</option>
+          </select>
+          <small class="text-muted">The Local Heuristic Engine works seamlessly without any API key.</small>
+        </div>
+
+        <div class="form-group" id="apiKeyGroup">
+          <label id="apiKeyLabel">Gemini API Key:</label>
+          <input type="password" id="settingApiKey" class="form-input" placeholder="AIzaSy...">
+          <small class="text-muted">Stored securely in your current browser session only.</small>
+        </div>
+
+        <div class="form-group">
+          <label>Model Override:</label>
+          <input type="text" id="settingModel" class="form-input" placeholder="gemini-2.5-flash or gpt-4o-mini">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btnSaveSettings">Save & Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT PERSONA MODAL -->
+  <div class="modal-backdrop" id="personaModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2>Customize Customer Persona</h2>
+        <button class="modal-close" id="btnClosePersonaModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Customer Name:</label>
+          <input type="text" id="customName" class="form-input" value="Alex Taylor">
+        </div>
+        <div class="form-group">
+          <label>Customer Role / Demographics:</label>
+          <input type="text" id="customRole" class="form-input" value="Architect / Long-time subscriber">
+        </div>
+        <div class="form-group">
+          <label>Patience (1 - 10): <span id="lblCustomPatience">4</span></label>
+          <input type="range" id="rngPatience" min="1" max="10" value="4" class="form-range">
+        </div>
+        <div class="form-group">
+          <label>Emotional Sensitivity (1 - 10): <span id="lblCustomSens">7</span></label>
+          <input type="range" id="rngSens" min="1" max="10" value="7" class="form-range">
+        </div>
+        <div class="form-group">
+          <label>Skepticism (1 - 10): <span id="lblCustomSkep">6</span></label>
+          <input type="range" id="rngSkep" min="1" max="10" value="6" class="form-range">
+        </div>
+        <div class="form-group">
+          <label>Verbosity:</label>
+          <select id="customVerbosity" class="form-select">
+            <option value="concise">Concise & Direct</option>
+            <option value="moderate" selected>Moderate</option>
+            <option value="verbose">Verbose & Detailed</option>
+            <option value="rambling">Rambling & Story-telling</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btnApplyCustomPersona">Apply to Session</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+

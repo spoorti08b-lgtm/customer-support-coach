@@ -437,7 +437,7 @@ with st.sidebar:
                 st.rerun()
 
         with delete_column:
-            if st.button(key=f"del_{session_id}", help="Delete this session"):
+            if st.button("Delete", key=f"del_{session_id}", help="Delete this session"):
                 st.session_state["delete_session_id"] = session_id
 
     delete_session_id = st.session_state.get("delete_session_id")
